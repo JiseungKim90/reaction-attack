@@ -78,10 +78,14 @@ Each writes a CSV plus per-trial logs under the matching `results_*/` directory.
 
 `results_e2e/` holds an earlier end-to-end sanity sweep and is supplementary.
 
-Pre-computed result CSVs and logs from our runs are included so the tables can
-be inspected without re-running. Every shipped run achieves full key recovery
-(`correct == N`); the Gaussian secret is recovered at ≈ 5.4 `n` queries,
-matching the $O(n\log S)$ bisection extension ($S = 6\sigma$).
+Pre-computed result **CSVs and MANIFESTs record every run** and are the
+authoritative per-run records; the tables can be inspected without re-running.
+To keep the repository small, only a **representative sample of raw per-trial
+oracle logs** (3 per large sweep, one per secret distribution) is shipped under
+each `logs/`; rerun the scripts to regenerate the full per-trial set. Every run
+in the CSVs achieves full key recovery (`correct == N`); the Gaussian secret is
+recovered at ≈ 5.4 `n` queries, matching the $O(n\log S)$ bisection extension
+($S = 6\sigma$).
 
 ## Determinism
 
