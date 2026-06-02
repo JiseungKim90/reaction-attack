@@ -80,12 +80,13 @@ Each writes a CSV plus per-trial logs under the matching `results_*/` directory.
 
 Pre-computed result **CSVs and MANIFESTs record every run** and are the
 authoritative per-run records; the tables can be inspected without re-running.
-To keep the repository small, only a **representative sample of raw per-trial
-oracle logs** (3 per large sweep, one per secret distribution) is shipped under
-each `logs/`; rerun the scripts to regenerate the full per-trial set. Every run
-in the CSVs achieves full key recovery (`correct == N`); the Gaussian secret is
-recovered at ≈ 5.4 `n` queries, matching the $O(n\log S)$ bisection extension
-($S = 6\sigma$).
+For inline browsing, only a **representative sample of raw per-trial oracle
+logs** (3 per large sweep, one per secret distribution) is kept under each
+`logs/`; the **complete per-trial log set (685 logs, all sweeps) is shipped in
+`full_logs.zip`** (`unzip full_logs.zip` reconstructs the full `logs/` trees).
+Every run in the CSVs achieves full key recovery (`correct == N`); the Gaussian
+secret is recovered at ≈ 5.4 `n` queries, matching the $O(n\log S)$ bisection
+extension ($S = 6\sigma$).
 
 ## Determinism
 
