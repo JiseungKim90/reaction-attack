@@ -1,0 +1,22 @@
+experiment: reaction-attack-ckks secret-distribution sweep
+level: n12  (logN=12 logDelta=30 logQ0=35)
+date_utc: 2026-05-28T10:08:33Z
+host: (anonymized)
+cpu: Intel(R) Core(TM) i9-10940X CPU @ 3.30GHz
+nproc: 28
+scheduling: taskset -c 0-3, one dedicated core per concurrent run (single-core wall timing)
+go: go version go1.26.1 linux/amd64
+lattigo: require github.com/tuneinsight/lattigo/v6 v6.2.0
+attack_go_sha256: 7f83be37990e562ca7f335d43401be6f5ae28e106ad62caaea574df1546bb3f5
+attack_bin_sha256: eab5f95aa833c07ac1c6fc730f67d58e8a9d9c208e79c948f410cbd9ec954f31
+git_commit: none
+oracle: slot-domain |slot|<=1 (tau=1); alpha*=ceil(4 sqrt(N/2)) for ternary, alpha=1/w for Gaussian bisection
+secret_distributions:
+  lane0: p:0.333333 50
+  lane0: h:256 50
+  lane1: p:0.5 50
+  lane1: h:192 50
+  lane2: p:0.666667 50
+  lane2: h:128 50
+  lane3: p:0.9 50
+  lane3: g 20

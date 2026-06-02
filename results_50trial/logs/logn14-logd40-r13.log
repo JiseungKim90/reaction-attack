@@ -1,0 +1,19 @@
+=== Lattigo wire-format reaction attack (Algorithm 1) ===
+logN=14  logDelta=40
+N=16384  logQ=285.0000013829985  LogDefaultScale=40  levels=6  logSlots=13
+Secret hamming weight = 5479 / 16384
+Step1 verify: coeffs within 2^20 of Delta*s: 16384 / 16384   max dev = 2^3.70
+C2S done in 0.16s  ctReal.Level=1 ctImag.Level=1  scale=2^40.00
+  C2S slot 0:  real=-0.0000 exp s_0=+0   imag=-0.0000 exp s_8192=+0
+  C2S slot 1:  real=-1.0000 exp s_1=+0   imag=+0.0000 exp s_8193=+0
+  C2S slot 2:  real=-1.0000 exp s_2=+0   imag=+0.0000 exp s_8194=+0
+  C2S slot 3:  real=-0.0000 exp s_3=-1   imag=+0.0000 exp s_8195=+0
+  C2S slot 4:  real=+0.0000 exp s_4=+0   imag=+0.0000 exp s_8196=+0
+  C2S slot 5:  real=-1.0000 exp s_5=-1   imag=+0.0000 exp s_8197=+0
+  C2S verify: 8334 / 16384 slot values within 0.4 of expected
+
+=== Result ===
+Recovered (coeff): 16384 / 16384  (100.00%)
+Recovered (slot, no perm): 8334 / 16384  (50.87%)
+queries=21863  ratio=1.334  attack-wall=6m35.010052568s
+SUMMARY logn=14 logd=40 N=16384 hw=5479 correct=16384 queries=21863 ratio=1.3344 wall_seconds=395.0101

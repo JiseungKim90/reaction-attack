@@ -1,0 +1,11 @@
+# compiled attack binary (rebuild with `go build -o attack .`)
+/attack
+*.exe
+
+# pre-edit backups / local archive (not part of the artifact)
+*.bak
+_archive/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
