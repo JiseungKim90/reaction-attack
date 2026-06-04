@@ -1,0 +1,65 @@
+sign-LWE hardness: n=h, q=2^35 (level-0 prime q0), Xs=Uniform(-1,1) ternary, Xe=DG(3.2), m=4096
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=32, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=32, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^79.9, m: ≈2^72.3, mem: ≈2^73.3, b: 2, t1: 0, t2: 10, ℓ: 1, #cod: 30, #top: 0, #test: 2, tag: coded-bkw
+usvp                 :: rop: ≈2^33.1, red: ≈2^33.1, δ: 1.012950, β: 40, d: 41, tag: usvp
+bdd                  :: rop: ≈2^33.1, red: ≈2^33.1, svp: ≈2^21.1, β: 40, η: 1, d: 40, tag: bdd
+dual                 :: rop: ≈2^40.7, mem: 41, m: 207, β: 40, d: 239, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^37.5, red: ≈2^37.5, guess: ≈2^31.7, β: 54, p: 3, ζ: 0, t: 10, β': 41, N: 133.587, m: 32
+SIGN_LWE h=32 min_bits=33.1 best_attack=usvp all={'arora-gb': inf, 'bkw': 79.9, 'usvp': 33.1, 'bdd': 33.1, 'dual': 40.7, 'dual_hybrid': 37.5} (4s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=64, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=64, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^80.7, m: ≈2^72.2, mem: ≈2^73.2, b: 2, t1: 0, t2: 9, ℓ: 1, #cod: 64, #top: 0, #test: 5, tag: coded-bkw
+usvp                 :: rop: ≈2^38.0, red: ≈2^38.0, δ: 1.012950, β: 40, d: 70, tag: usvp
+bdd                  :: rop: ≈2^38.1, red: ≈2^38.1, svp: ≈2^20.6, β: 40, η: 2, d: 72, tag: bdd
+dual                 :: rop: ≈2^41.3, mem: 41, m: 274, β: 40, d: 338, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^40.4, red: ≈2^40.4, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 56, N: 1834.443, m: 64
+SIGN_LWE h=64 min_bits=38.0 best_attack=usvp all={'arora-gb': inf, 'bkw': 80.7, 'usvp': 38.0, 'bdd': 38.1, 'dual': 41.3, 'dual_hybrid': 40.4} (4s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=128, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=128, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^81.3, m: ≈2^72.0, mem: ≈2^73.0, b: 2, t1: 0, t2: 8, ℓ: 1, #cod: 115, #top: 0, #test: 13, tag: coded-bkw
+usvp                 :: rop: ≈2^39.8, red: ≈2^39.8, δ: 1.012950, β: 40, d: 145, tag: usvp
+bdd                  :: rop: ≈2^39.9, red: ≈2^39.9, svp: ≈2^20.6, β: 40, η: 2, d: 151, tag: bdd
+dual                 :: rop: ≈2^41.9, mem: 41, m: 350, β: 40, d: 478, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^41.8, red: ≈2^41.8, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 61, N: 1834.444, m: 128
+SIGN_LWE h=128 min_bits=39.8 best_attack=usvp all={'arora-gb': inf, 'bkw': 81.3, 'usvp': 39.8, 'bdd': 39.9, 'dual': 41.9, 'dual_hybrid': 41.8} (6s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=192, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=192, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^86.6, m: ≈2^74.7, mem: ≈2^75.7, b: 2, t1: 19, t2: 32, ℓ: 1, #cod: 150, #top: 0, #test: 5, tag: coded-bkw
+usvp                 :: rop: ≈2^40.7, red: ≈2^40.7, δ: 1.012950, β: 40, d: 229, tag: usvp
+bdd                  :: rop: ≈2^40.7, red: ≈2^40.7, svp: ≈2^20.6, β: 40, η: 2, d: 241, tag: bdd
+dual                 :: rop: ≈2^42.2, mem: 41, m: 393, β: 40, d: 585, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^42.5, red: ≈2^42.5, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 63, N: 1834.493, m: 192
+SIGN_LWE h=192 min_bits=40.7 best_attack=usvp all={'arora-gb': inf, 'bkw': 86.6, 'usvp': 40.7, 'bdd': 40.7, 'dual': 42.2, 'dual_hybrid': 42.5} (15s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=256, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=256, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^84.7, m: ≈2^73.4, mem: ≈2^74.4, b: 2, t1: 0, t2: 21, ℓ: 1, #cod: 240, #top: 0, #test: 19, tag: coded-bkw
+usvp                 :: rop: ≈2^41.2, red: ≈2^41.2, δ: 1.012950, β: 40, d: 326, tag: usvp
+bdd                  :: rop: ≈2^41.4, red: ≈2^41.4, svp: ≈2^20.7, β: 40, η: 2, d: 347, tag: bdd
+dual                 :: rop: ≈2^42.4, mem: 41, m: 419, β: 40, d: 675, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^43.0, red: ≈2^43.0, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 65, N: 1836.031, m: 256
+SIGN_LWE h=256 min_bits=41.2 best_attack=usvp all={'arora-gb': inf, 'bkw': 84.7, 'usvp': 41.2, 'bdd': 41.4, 'dual': 42.4, 'dual_hybrid': 43.0} (12s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=512, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=512, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^122.9, m: ≈2^109.5, mem: ≈2^110.5, b: 3, t1: 0, t2: 44, ℓ: 2, #cod: 484, #top: 0, #test: 35, tag: coded-bkw
+usvp                 :: rop: ≈2^51.9, red: ≈2^51.9, δ: 1.010779, β: 71, d: 991, tag: usvp
+bdd                  :: rop: ≈2^50.9, red: ≈2^50.8, svp: ≈2^47.6, β: 67, η: 90, d: 1002, tag: bdd
+dual                 :: rop: ≈2^52.9, mem: ≈2^27.0, m: 534, β: 71, d: 1046, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^52.5, red: ≈2^52.3, guess: ≈2^49.5, β: 69, p: 3, ζ: 10, t: 0, β': 96, N: ≈2^18.9, m: 512
+SIGN_LWE h=512 min_bits=50.9 best_attack=bdd all={'arora-gb': inf, 'bkw': 122.9, 'usvp': 51.9, 'bdd': 50.9, 'dual': 52.9, 'dual_hybrid': 52.5} (27s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=768, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=768, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^173.1, m: ≈2^158.0, mem: ≈2^145.9, b: 4, t1: 7, t2: 52, ℓ: 3, #cod: 688, #top: 0, #test: 53, tag: coded-bkw
+usvp                 :: rop: ≈2^74.7, red: ≈2^74.7, δ: 1.007400, β: 152, d: 1465, tag: usvp
+bdd                  :: rop: ≈2^73.6, red: ≈2^73.3, svp: ≈2^70.9, β: 147, η: 175, d: 1478, tag: bdd
+dual                 :: rop: ≈2^76.0, mem: ≈2^44.0, m: 780, β: 153, d: 1548, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^74.7, red: ≈2^74.7, guess: ≈2^68.9, β: 148, p: 3, ζ: 10, t: 20, β': 172, N: ≈2^33.8, m: 768
+SIGN_LWE h=768 min_bits=73.6 best_attack=bdd all={'arora-gb': inf, 'bkw': 173.1, 'usvp': 74.7, 'bdd': 73.6, 'dual': 76.0, 'dual_hybrid': 74.7} (45s)
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=False, babai=False, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=1024, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+Algorithm functools.partial(<estimator.lwe_primal.PrimalHybrid object at 0x7f0a2f621f10>, mitm=True, babai=True, red_cost_model=<estimator.reduction.MATZOV object at 0x7f0a2f657460>, red_shape_model=<function GSA at 0x7f0a2f659e50>) on LWEParameters(n=1024, q=34359738368, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with 'numpy.float64' object cannot be interpreted as an integer
+bkw                  :: rop: ≈2^228.5, m: ≈2^214.3, mem: ≈2^215.3, b: 6, t1: 0, t2: 40, ℓ: 5, #cod: 937, #top: 0, #test: 87, tag: coded-bkw
+usvp                 :: rop: ≈2^98.3, red: ≈2^98.3, δ: 1.005663, β: 236, d: 2012, tag: usvp
+bdd                  :: rop: ≈2^97.1, red: ≈2^96.9, svp: ≈2^94.4, β: 231, η: 260, d: 1981, tag: bdd
+dual                 :: rop: ≈2^100.0, mem: ≈2^61.3, m: 1022, β: 239, d: 2046, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^97.9, red: ≈2^97.9, guess: ≈2^85.4, β: 231, p: 3, ζ: 10, t: 30, β': 250, N: ≈2^50.1, m: 1024
+SIGN_LWE h=1024 min_bits=97.1 best_attack=bdd all={'arora-gb': inf, 'bkw': 228.5, 'usvp': 98.3, 'bdd': 97.1, 'dual': 100.0, 'dual_hybrid': 97.9} (23s)

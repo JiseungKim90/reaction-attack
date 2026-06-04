@@ -1,0 +1,5 @@
+GROUPTEST N=4096 h=32 queries=338 (qR=178 qI=160) queries_per_h=10.56 h_log2_N_over_h=224 exact_support=true fp=0 fn=0
+GROUPTEST N=4096 h=64 queries=598 (qR=301 qI=297) queries_per_h=9.34 h_log2_N_over_h=384 exact_support=true fp=0 fn=0
+GROUPTEST N=4096 h=128 queries=1079 (qR=569 qI=510) queries_per_h=8.43 h_log2_N_over_h=640 exact_support=true fp=0 fn=0
+GROUPTEST N=16384 h=128 queries=1469 (qR=769 qI=700) queries_per_h=11.48 h_log2_N_over_h=896 exact_support=true fp=0 fn=0
+GROUPTEST N=65536 h=128 queries=1801 (qR=906 qI=895) queries_per_h=14.07 h_log2_N_over_h=1152 exact_support=true fp=0 fn=0

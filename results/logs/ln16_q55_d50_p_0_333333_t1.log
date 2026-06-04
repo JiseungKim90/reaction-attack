@@ -1,0 +1,21 @@
+=== Lattigo wire-format reaction attack (Algorithm 1) ===
+logN=16  logDelta=50  secret=ternary-p0.333333
+N=65536  logQ=305.00000000573135  LogDefaultScale=50  levels=6  logSlots=15
+Secret hamming weight = 21919 / 65536
+relinearization key in evaluator: true
+Step1 verify: coeffs within 2^20 of Delta*s: 65536 / 65536   max dev = 2^3.91
+C2S done in 1.76s  ctReal.Level=1 ctImag.Level=1  scale=2^50.00
+  C2S slot 0:  real=-0.0000 exp s_0=+0   imag=+1.0000 exp s_32768=+1
+  C2S slot 1:  real=-0.0000 exp s_16384=+0   imag=+0.0000 exp s_49152=+0
+  C2S slot 2:  real=+0.0000 exp s_8192=+0   imag=-1.0000 exp s_40960=-1
+  C2S slot 3:  real=-0.0000 exp s_24576=+0   imag=+0.0000 exp s_57344=+0
+  C2S slot 4:  real=-1.0000 exp s_4096=-1   imag=+0.0000 exp s_36864=+0
+  C2S slot 5:  real=-1.0000 exp s_20480=-1   imag=+0.0000 exp s_53248=+0
+  C2S verify: 65536 / 65536 slot values within 0.4 of expected
+EMPIRICAL_BC2S max_slot_residual=1.216e-10 std_slot_residual=1.562e-11 scale=2^50.00  poly_max=2^17.06  poly_std=2^14.10  paper_bound=2^18
+
+=== Result ===
+Recovered (coeff): 65536 / 65536  (100.00%)
+Recovered (slot, no perm): 32686 / 65536  (49.87%)
+queries=87455  ratio=1.334  attack-wall=2h49m55.819011884s
+SUMMARY secret=ternary-p0.333333 logn=16 logd=50 N=65536 hw=21919 correct=65536 queries=87455 ratio=1.3345 wall_seconds=10195.8190

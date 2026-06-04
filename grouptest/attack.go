@@ -59,6 +59,7 @@ func main() {
 	measureC2S := flag.Bool("c2s-noise", false, "additionally measure the empirical B_C2S noise after CoeffsToSlots")
 	secretSpec := flag.String("secret", "p:0.333333", "secret distribution: p:<float> Bernoulli ternary, h:<int> fixed Hamming weight, g[:<sigma>] discrete Gaussian")
 	noRlk := flag.Bool("no-rlk", false, "omit the relinearization key from the evaluator (validates the no-rlk claim: plaintext-ciphertext multiply must not need it)")
+	groupTest := flag.Bool("group-test", false, "group-testing support recovery; report query count vs h*log2(N/h)")
 	flag.Parse()
 
 	xs, secretLabel, boundedSearch, secretBound := parseSecret(*secretSpec)
@@ -165,6 +166,10 @@ func main() {
 		measureC2SNoise(params, encoder, dec, ct2Real, ct2Imag, secret)
 	}
 
+	if *groupTest {
+		runGroupTest(params, pk, encryptor, eval, dec, ct2Real, ct2Imag, secret, chooseAlpha(N))
+		return
+	}
 	// Step 3+4: full attack loop.
 	recovered := make([]int, N)
 	queries := 0
