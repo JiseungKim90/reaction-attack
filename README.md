@@ -38,11 +38,12 @@ go build -o attack .
 ## Quick smoke test (~30 s)
 
 ```sh
-./attack -logn 12 -secret p:0.333333
+./attack -logn 12 -secret p:0.666667
 ```
 
 Expected tail: full key recovery (`correct == N`) with a query/$N$ ratio of
-~1.33 for the default $p = 1/3$ ternary secret.
+~1.67 for the default full-random ternary secret (`Ternary{P=2/3}`, Lattigo's
+`DefaultXs`). For the sparse `p:0.333333` secret the ratio is ~1.33.
 
 ## Command-line flags
 
@@ -51,7 +52,7 @@ Expected tail: full key recovery (`correct == N`) with a query/$N$ ratio of
 | `-logn` | `12` | $\log_2$ ring dimension $N$ |
 | `-logd` | `30` | $\log_2$ CKKS scale $\Delta$ |
 | `-logq0` | `35` | $\log_2$ level-zero modulus $q_0$ (paper "$\log q$") |
-| `-secret` | `p:0.333333` | secret: `p:<float>` Bernoulli ternary ($\Pr[s_i\neq0]$), `h:<int>` fixed Hamming weight, `g[:<sigma>]` discrete Gaussian (bisection) |
+| `-secret` | `p:0.333333` | secret: `p:<float>` Bernoulli ternary ($\Pr[s_i\neq0]$; Lattigo default `p:0.666667`), `h:<int>` fixed Hamming weight, `g[:<sigma>]` discrete Gaussian (bisection) |
 | `-c2s-noise` | `false` | additionally measure the empirical slot-domain $B_{\mathsf{C2S}}$ residual |
 | `-no-rlk` | `false` | omit the relinearization key (validates that the per-query plaintext multiply does not consume `rlk`) |
 
@@ -64,22 +65,23 @@ commented-out alternative.
 ## Reproducing the paper results
 
 `run_main_sweep.sh` runs every end-to-end regime in one pass (constant
-$\alpha^\*=4$, `-c2s-noise` on), writing one CSV row per run to
-`results/summary.csv` and a per-trial oracle log to `results/logs/`:
+$\alpha^\*=4$, `-c2s-noise` on), writing the main table and the secret-distribution
+sweep to separate CSVs with per-trial oracle logs:
 
-| Paper element | Rows in `results/summary.csv` |
+| Paper element | Output |
 |---|---|
-| **Main table** (mean+/-std over trials) | `p:0.333333` at $(\log N,\log q_0,\log\Delta)=(12,35,30),(12,37,32),(14,45,40),(16,55,50)$ |
-| **Secret-distribution robustness** | `h:{128,192,256}`, `p:{0.5,0.666667,0.9}`, `g:3.2` at $N=2^{12},2^{14}$ |
-| **Low-precision / dense presets** | `p:0.333333` at $(15,33,25)$; `p:0.666667` at $(16,55,50)$ |
-| **High-precision regime** | `run_16_60_58.sh`: `p:0.333333` at $(16,60,58)$, 5 trials -> `results/summary_16_60_58.csv` |
+| **Main table** (default $p=2/3$, mean+/-std over trials) | `results/main/summary.csv`: `p:0.666667` at $(\log N,\log q_0,\log\Delta)=(12,35,30),(12,37,32),(14,45,40),(16,55,50)$ |
+| **Secret-distribution robustness** | `results/robustness/summary.csv`: `h:{128,192,256}`, `p:{0.333333,0.5,0.666667,0.9}`, `g:3.2` at $N=2^{12},2^{14}$ |
+| **Low-precision noise preset** | `results/robustness/summary.csv`: `p:0.666667` at $(15,33,25)$ |
+| **High-precision regime** | `run_16_60_58.sh`: `p:0.666667` at $(16,60,58)$, 5 trials -> `results/main/summary_16_60_58.csv` |
 
 Each CSV row is `<tag> SUMMARY secret=... logn=... logd=... N=... hw=...
 correct=... queries=... ratio=... wall_seconds=...`. Every run achieves full
-key recovery (`correct == N`); the query/$N$ ratio is ~1.33 for $p=1/3$ and
-~5.4 for the discrete-Gaussian secret ($O(N\log S)$ bisection, $S=6\sigma$).
-The complete per-trial log set is shipped in `full_logs.zip`; a representative
-sample is kept uncompressed under `results/logs/`.
+key recovery (`correct == N`); the query/$N$ ratio is ~1.67 for the default
+$p=2/3$ secret and ~5.4 for the discrete-Gaussian secret ($O(N\log S)$
+bisection, $S=6\sigma$). The complete per-trial log set is shipped in
+`full_logs.zip`; a representative sample is kept uncompressed under
+`results/main/logs/` and `results/robustness/logs/`.
 
 ## Sparse-secret variant (`grouptest/`, `sign-lwe/`)
 
@@ -106,16 +108,18 @@ Runs are **not** seeded: each invocation samples a fresh secret, public key, and
 encryption randomness. The *outcome* is deterministic (full recovery whenever
 the slot-margin and modulus conditions hold), but the Hamming weight, exact
 query count, and wall-clock time vary slightly. A rerun reproduces the claims
-(full recovery, ~1.33 $N$ queries for $p=1/3$), not byte-identical numbers.
+(full recovery, ~1.67 $N$ queries for the default $p=2/3$), not byte-identical
+numbers.
 
 ## Repository layout
 
 ```
 attack.go              Algorithm 1 (Steps 1-4, oracle, recovery); constant alpha*=4
 go.mod / go.sum        Go module (Lattigo v6.2.0)
-run_main_sweep.sh      unified end-to-end sweep        -> results/
-run_16_60_58.sh        high-precision (16,60,58) regime -> results/
-results/               summary.csv + summary_16_60_58.csv + sample logs
+run_main_sweep.sh      main table + robustness sweep   -> results/{main,robustness}/
+run_16_60_58.sh        high-precision (16,60,58) regime -> results/main/
+results/main/          tab: experiment (default p=2/3): summary.csv + sample logs
+results/robustness/    tab: distsweep (multi-distribution): summary.csv + sample logs
 full_logs.zip          complete per-trial oracle logs
 grouptest/             sparse-secret support recovery (group testing) + sign LLL
 sign-lwe/              sign-LWE concrete-hardness estimate (lattice-estimator)

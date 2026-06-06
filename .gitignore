@@ -15,3 +15,9 @@ attack_a4*
 attack_gt
 reaction-attack-ckks-on-lattigo
 /grouptest/attack_gt
+
+# compiled experiment binaries (rebuild with go build)
+attack_a4*
+attack_gt
+reaction-attack-ckks-on-lattigo
+/grouptest/attack_gt
