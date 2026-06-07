@@ -1,0 +1,5 @@
+SUMMARY secret=ternary-p0.666667 logn=16 logd=58 N=65536 hw=43578 correct=65536 queries=109114 ratio=1.6649 wall_seconds=68330.1732
+SUMMARY secret=ternary-p0.666667 logn=16 logd=58 N=65536 hw=43590 correct=65536 queries=109126 ratio=1.6651 wall_seconds=68347.8654
+SUMMARY secret=ternary-p0.666667 logn=16 logd=58 N=65536 hw=43618 correct=65536 queries=109154 ratio=1.6656 wall_seconds=68388.2629
+SUMMARY secret=ternary-p0.666667 logn=16 logd=58 N=65536 hw=43771 correct=65536 queries=109307 ratio=1.6679 wall_seconds=68468.8907
+SUMMARY secret=ternary-p0.666667 logn=16 logd=58 N=65536 hw=43857 correct=65536 queries=109393 ratio=1.6692 wall_seconds=68504.1643
