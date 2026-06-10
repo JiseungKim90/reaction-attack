@@ -96,11 +96,17 @@ a support-restricted $h$-dimensional LWE with **no further oracle queries**.
 - `grouptest/solve_lwe.py` — recovers the signs by LLL (primal embedding,
   $m=h$ samples, dimension $2h+1$). On the exported instances it recovers all
   signs in 0.4 s ($h=32$), 3.3 s ($h=64$), 25 min ($h=128$), single core.
-- `sign-lwe/estimate_sign_lwe.py` + `results_sign_lwe.log` — concrete hardness
-  of the sign-LWE via the lattice-estimator (default model): ~40 bits at
-  $h=128$, 51 at $h=512$, 97 at $h=1024$, reaching the 128-bit deployment
-  target only for near-dense secrets. Run from a lattice-estimator checkout:
-  `sage -python estimate_sign_lwe.py`.
+- `sign-lwe/estimate_sign_lwe.py` + `results_sign_lwe.log` /
+  `results_sign_lwe_pk_rotk.log` — concrete hardness of the sign-LWE via the
+  lattice-estimator (default model). At the level-0 residual modulus
+  ($\log q_0=35$): ~40 bits at $h=128$, 51 at $h=512$, 97 at $h=1024$, reaching the
+  128-bit target only for near-dense secrets. 
+  At the public-/rotation-key moduli $Q$/$PQ$ ($\log q=310$, $432$, or even larger, but with $m=4096$ fixed): the cost stays near 40 bits (39.6 at
+  $h=128$, 43.1 at $h=1024$); larger $q$ further weakens the instance. 
+  Note, the cost is already an upper bound, as lattice estimator only allow to use $\beta \ge 40$ and all the estimations are using this lower bound; the real cost may significantly lower. 
+  Run from a lattice-estimator checkout:
+  `sage -python estimate_sign_lwe.py`. 
+  Lines 41--42 may need to be adjusted.
 
 ## Determinism
 

@@ -1,0 +1,124 @@
+sign-LWE hardness: n=h, Xs=Uniform(-1,1) ternary, Xe=DG(3.2); key-target moduli log q in {35 (q0), 310 (pk), 432 (rotk)}, m=4096 (conservative: smallest q and smallest m -> security upper bound)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=32, q=2085924839766513752338888384931203236916703635113918720651407820138886450957656787131798913024, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot access local variable 'sigma_set' where it is not associated with a value
+usvp                 :: rop: ≈2^33.1, red: ≈2^33.1, δ: 1.012950, β: 40, d: 41, tag: usvp
+bdd                  :: rop: ≈2^33.1, red: ≈2^33.1, svp: ≈2^21.1, β: 40, η: 1, d: 40, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^39.9, red: ≈2^39.6, svp: ≈2^37.7, β: 40, η: 2, ζ: 31, |S|: ≈2^47.4, d: 129, prob: 1, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^42.5, mem: 41, m: 697, β: 40, d: 729, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^37.5, red: ≈2^37.5, guess: ≈2^31.7, β: 54, p: 3, ζ: 0, t: 10, β': 41, N: 133.587, m: 32
+SIGN_LWE pk        h=32 logq=310 m=4096 min_bits=33.1 best_attack=usvp all={'arora-gb': inf, 'usvp': 33.1, 'bdd': 33.1, 'bdd_hybrid': 42.3, 'bdd_mitm_hybrid': 39.9, 'dual': 42.5, 'dual_hybrid': 37.5} (3s)
+bkw                  :: rop: ≈2^632.7, m: ≈2^623.4, mem: ≈2^624.4, b: 2, t1: 0, t2: 21, ℓ: 1, #cod: 63, #top: 0, #test: 2, tag: coded-bkw
+usvp                 :: rop: ≈2^40.4, red: ≈2^40.4, δ: 1.011142, β: 65, d: 66, tag: usvp
+bdd                  :: rop: ≈2^37.7, red: ≈2^37.7, svp: ≈2^21.1, β: 40, η: 1, d: 65, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^42.8, red: ≈2^42.8, svp: ≈2^35.3, β: 40, η: 2, ζ: 20, |S|: ≈2^31.7, d: 855, prob: 0.993, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^43.0, mem: 41, m: 967, β: 40, d: 1031, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^40.4, red: ≈2^40.4, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 56, N: 1834.443, m: 64
+SIGN_LWE pk        h=64 logq=310 m=4096 min_bits=37.7 best_attack=bdd all={'arora-gb': inf, 'bkw': 632.7, 'usvp': 40.4, 'bdd': 37.7, 'bdd_hybrid': 42.9, 'bdd_mitm_hybrid': 42.8, 'dual': 43.0, 'dual_hybrid': 40.4} (7s)
+bkw                  :: rop: ≈2^635.4, m: ≈2^624.4, mem: ≈2^625.4, b: 2, t1: 0, t2: 42, ℓ: 1, #cod: 126, #top: 0, #test: 2, tag: coded-bkw
+usvp                 :: rop: ≈2^39.6, red: ≈2^39.6, δ: 1.012950, β: 40, d: 131, tag: usvp
+bdd                  :: rop: ≈2^39.6, red: ≈2^39.6, svp: ≈2^20.6, β: 40, η: 2, d: 130, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^43.5, red: ≈2^43.5, svp: ≈2^34.3, β: 40, η: 2, ζ: 17, |S|: ≈2^26.9, d: 1358, prob: 0.994, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^43.6, mem: 41, m: 1330, β: 40, d: 1458, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^41.8, red: ≈2^41.8, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 61, N: 1834.443, m: 128
+SIGN_LWE pk        h=128 logq=310 m=4096 min_bits=39.6 best_attack=bdd all={'arora-gb': inf, 'bkw': 635.4, 'usvp': 39.6, 'bdd': 39.6, 'bdd_hybrid': 43.5, 'bdd_mitm_hybrid': 43.5, 'dual': 43.6, 'dual_hybrid': 41.8} (6s)
+bkw                  :: rop: ≈2^637.2, m: ≈2^625.0, mem: ≈2^626.0, b: 2, t1: 0, t2: 64, ℓ: 1, #cod: 192, #top: 0, #test: 2, tag: coded-bkw
+usvp                 :: rop: ≈2^40.4, red: ≈2^40.4, δ: 1.012950, β: 40, d: 196, tag: usvp
+bdd                  :: rop: ≈2^40.4, red: ≈2^40.4, svp: ≈2^31.1, β: 40, η: 33, d: 195, tag: bdd
+dual                 :: rop: ≈2^43.9, mem: 41, m: 1593, β: 40, d: 1785, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^42.5, red: ≈2^42.5, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 63, N: 1834.443, m: 192
+SIGN_LWE pk        h=192 logq=310 m=4096 min_bits=40.4 best_attack=bdd all={'arora-gb': inf, 'bkw': 637.2, 'usvp': 40.4, 'bdd': 40.4, 'bdd_hybrid': 43.8, 'bdd_mitm_hybrid': 43.9, 'dual': 43.9, 'dual_hybrid': 42.5} (10s)
+bkw                  :: rop: ≈2^635.1, m: ≈2^623.6, mem: ≈2^624.6, b: 2, t1: 0, t2: 25, ℓ: 1, #cod: 254, #top: 0, #test: 6, tag: coded-bkw
+usvp                 :: rop: ≈2^40.9, red: ≈2^40.9, δ: 1.012950, β: 40, d: 262, tag: usvp
+bdd                  :: rop: ≈2^40.9, red: ≈2^40.9, svp: ≈2^21.1, β: 40, η: 1, d: 263, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^44.0, red: ≈2^44.0, svp: ≈2^33.0, β: 40, η: 2, ζ: 14, |S|: ≈2^22.2, d: 2004, prob: 0.997, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^44.1, mem: 41, m: 1806, β: 40, d: 2062, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^43.0, red: ≈2^43.0, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 65, N: 1834.443, m: 256
+SIGN_LWE pk        h=256 logq=310 m=4096 min_bits=40.9 best_attack=usvp all={'arora-gb': inf, 'bkw': 635.1, 'usvp': 40.9, 'bdd': 40.9, 'bdd_hybrid': 44.1, 'bdd_mitm_hybrid': 44.0, 'dual': 44.1, 'dual_hybrid': 43.0} (9s)
+bkw                  :: rop: ≈2^639.5, m: ≈2^625.4, mem: ≈2^626.4, b: 2, t1: 0, t2: 87, ℓ: 1, #cod: 508, #top: 0, #test: 4, tag: coded-bkw
+usvp                 :: rop: ≈2^42.0, red: ≈2^42.0, δ: 1.012950, β: 40, d: 532, tag: usvp
+bdd                  :: rop: ≈2^42.0, red: ≈2^42.0, svp: ≈2^20.8, β: 40, η: 2, d: 533, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^44.6, red: ≈2^44.6, svp: ≈2^36.4, β: 40, η: 2, ζ: 17, |S|: ≈2^26.9, d: 2866, prob: 0.991, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^44.6, mem: 41, m: ≈2^11.2, β: 40, d: 2915, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^44.0, red: ≈2^44.0, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 68, N: 1834.443, m: 512
+SIGN_LWE pk        h=512 logq=310 m=4096 min_bits=42.0 best_attack=usvp all={'arora-gb': inf, 'bkw': 639.5, 'usvp': 42.0, 'bdd': 42.0, 'bdd_hybrid': 44.6, 'bdd_mitm_hybrid': 44.6, 'dual': 44.6, 'dual_hybrid': 44.0} (21s)
+bkw                  :: rop: ≈2^642.5, m: ≈2^626.7, mem: ≈2^627.7, b: 2, t1: 2, t2: 206, ℓ: 1, #cod: 762, #top: 0, #test: 3, tag: coded-bkw
+usvp                 :: rop: ≈2^42.7, red: ≈2^42.7, δ: 1.012950, β: 40, d: 812, tag: usvp
+bdd                  :: rop: ≈2^42.7, red: ≈2^42.7, svp: ≈2^21.1, β: 40, η: 2, d: 814, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^44.9, red: ≈2^44.9, svp: ≈2^37.0, β: 40, η: 2, ζ: 17, |S|: ≈2^26.9, d: 3531, prob: 0.991, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^44.9, mem: 41, m: ≈2^11.5, β: 40, d: 3570, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^44.6, red: ≈2^44.6, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 70, N: 1834.443, m: 768
+SIGN_LWE pk        h=768 logq=310 m=4096 min_bits=42.7 best_attack=usvp all={'arora-gb': inf, 'bkw': 642.5, 'usvp': 42.7, 'bdd': 42.7, 'bdd_hybrid': 44.9, 'bdd_mitm_hybrid': 44.9, 'dual': 44.9, 'dual_hybrid': 44.6} (84s)
+bkw                  :: rop: ≈2^638.4, m: ≈2^624.4, mem: ≈2^625.4, b: 2, t1: 0, t2: 41, ℓ: 1, #cod: 1013, #top: 0, #test: 20, tag: coded-bkw
+usvp                 :: rop: ≈2^43.1, red: ≈2^43.1, δ: 1.012950, β: 40, d: 1102, tag: usvp
+bdd                  :: rop: ≈2^43.1, red: ≈2^43.1, svp: ≈2^21.4, β: 40, η: 2, d: 1106, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^45.1, red: ≈2^45.1, svp: ≈2^37.5, β: 40, η: 2, ζ: 17, |S|: ≈2^26.9, d: 4088, prob: 0.991, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^45.1, mem: 41, m: ≈2^11.6, β: 40, d: 4123, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^45.1, red: ≈2^45.1, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 72, N: 1834.443, m: 1024
+SIGN_LWE pk        h=1024 logq=310 m=4096 min_bits=43.1 best_attack=usvp all={'arora-gb': inf, 'bkw': 638.4, 'usvp': 43.1, 'bdd': 43.1, 'bdd_hybrid': 45.1, 'bdd_mitm_hybrid': 45.1, 'dual': 45.1, 'dual_hybrid': 45.1} (63s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=32, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^33.1, red: ≈2^33.1, δ: 1.012950, β: 40, d: 41, tag: usvp
+bdd                  :: rop: ≈2^33.1, red: ≈2^33.1, svp: ≈2^21.1, β: 40, η: 1, d: 40, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^40.3, red: ≈2^39.9, svp: ≈2^38.2, β: 40, η: 2, ζ: 31, |S|: ≈2^47.4, d: 153, prob: 1, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^42.8, mem: 41, m: 829, β: 40, d: 861, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^37.5, red: ≈2^37.5, guess: ≈2^31.7, β: 54, p: 3, ζ: 0, t: 10, β': 41, N: 133.587, m: 32
+SIGN_LWE rotk      h=32 logq=432 m=4096 min_bits=33.1 best_attack=usvp all={'arora-gb': inf, 'usvp': 33.1, 'bdd': 33.1, 'bdd_hybrid': 42.5, 'bdd_mitm_hybrid': 40.3, 'dual': 42.8, 'dual_hybrid': 37.5} (5s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=64, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^40.4, red: ≈2^40.4, δ: 1.011142, β: 65, d: 66, tag: usvp
+bdd                  :: rop: ≈2^37.7, red: ≈2^37.7, svp: ≈2^21.1, β: 40, η: 1, d: 65, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^43.0, red: ≈2^43.0, svp: ≈2^35.8, β: 40, η: 2, ζ: 20, |S|: ≈2^31.7, d: 1010, prob: 0.993, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^43.3, mem: 41, m: 1154, β: 40, d: 1218, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^40.4, red: ≈2^40.4, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 56, N: 1834.443, m: 64
+SIGN_LWE rotk      h=64 logq=432 m=4096 min_bits=37.7 best_attack=bdd all={'arora-gb': inf, 'usvp': 40.4, 'bdd': 37.7, 'bdd_hybrid': 43.2, 'bdd_mitm_hybrid': 43.0, 'dual': 43.3, 'dual_hybrid': 40.4} (7s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=128, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^39.6, red: ≈2^39.6, δ: 1.012950, β: 40, d: 131, tag: usvp
+bdd                  :: rop: ≈2^39.6, red: ≈2^39.6, svp: ≈2^21.1, β: 40, η: 1, d: 130, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^43.7, red: ≈2^43.7, svp: ≈2^34.8, β: 40, η: 2, ζ: 17, |S|: ≈2^26.9, d: 1604, prob: 0.994, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^43.8, mem: 41, m: 1594, β: 40, d: 1722, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^41.8, red: ≈2^41.8, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 61, N: 1834.443, m: 128
+SIGN_LWE rotk      h=128 logq=432 m=4096 min_bits=39.6 best_attack=bdd all={'arora-gb': inf, 'usvp': 39.6, 'bdd': 39.6, 'bdd_hybrid': 43.8, 'bdd_mitm_hybrid': 43.7, 'dual': 43.8, 'dual_hybrid': 41.8} (3s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=192, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^40.4, red: ≈2^40.4, δ: 1.012950, β: 40, d: 196, tag: usvp
+bdd                  :: rop: ≈2^40.4, red: ≈2^40.4, svp: ≈2^21.1, β: 40, η: 1, d: 195, tag: bdd
+dual                 :: rop: ≈2^44.1, mem: 41, m: 1917, β: 40, d: 2109, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^42.5, red: ≈2^42.5, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 63, N: 1834.443, m: 192
+SIGN_LWE rotk      h=192 logq=432 m=4096 min_bits=40.4 best_attack=bdd all={'arora-gb': inf, 'usvp': 40.4, 'bdd': 40.4, 'bdd_hybrid': 44.1, 'bdd_mitm_hybrid': 44.1, 'dual': 44.1, 'dual_hybrid': 42.5} (6s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=256, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^40.9, red: ≈2^40.9, δ: 1.012950, β: 40, d: 261, tag: usvp
+bdd                  :: rop: ≈2^40.9, red: ≈2^40.9, svp: ≈2^21.1, β: 40, η: 1, d: 261, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^44.3, red: ≈2^44.3, svp: ≈2^33.5, β: 40, η: 2, ζ: 14, |S|: ≈2^22.2, d: 2368, prob: 0.997, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^44.3, mem: 41, m: ≈2^11.1, β: 40, d: 2436, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^43.0, red: ≈2^43.0, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 65, N: 1834.443, m: 256
+SIGN_LWE rotk      h=256 logq=432 m=4096 min_bits=40.9 best_attack=usvp all={'arora-gb': inf, 'usvp': 40.9, 'bdd': 40.9, 'bdd_hybrid': 44.3, 'bdd_mitm_hybrid': 44.3, 'dual': 44.3, 'dual_hybrid': 43.0} (5s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=512, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^42.0, red: ≈2^42.0, δ: 1.012950, β: 40, d: 527, tag: usvp
+bdd                  :: rop: ≈2^42.0, red: ≈2^42.0, svp: ≈2^21.3, β: 40, η: 1, d: 527, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^44.8, red: ≈2^44.8, svp: ≈2^34.6, β: 40, η: 2, ζ: 14, |S|: ≈2^22.2, d: 3397, prob: 0.997, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^44.8, mem: 41, m: ≈2^11.5, β: 40, d: 3444, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^44.0, red: ≈2^44.0, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 68, N: 1834.443, m: 512
+SIGN_LWE rotk      h=512 logq=432 m=4096 min_bits=42.0 best_attack=usvp all={'arora-gb': inf, 'usvp': 42.0, 'bdd': 42.0, 'bdd_hybrid': 44.8, 'bdd_mitm_hybrid': 44.8, 'dual': 44.8, 'dual_hybrid': 44.0} (9s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=768, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^42.7, red: ≈2^42.7, δ: 1.012950, β: 40, d: 799, tag: usvp
+bdd                  :: rop: ≈2^42.7, red: ≈2^42.7, svp: ≈2^21.4, β: 40, η: 1, d: 800, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^45.1, red: ≈2^45.1, svp: ≈2^35.2, β: 40, η: 2, ζ: 14, |S|: ≈2^22.2, d: 4180, prob: 0.997, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^45.1, mem: 41, m: ≈2^11.8, β: 40, d: 4218, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^44.6, red: ≈2^44.6, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 70, N: 1834.443, m: 768
+SIGN_LWE rotk      h=768 logq=432 m=4096 min_bits=42.7 best_attack=usvp all={'arora-gb': inf, 'usvp': 42.7, 'bdd': 42.7, 'bdd_hybrid': 45.1, 'bdd_mitm_hybrid': 45.1, 'dual': 45.1, 'dual_hybrid': 44.6} (14s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=1024, q=11090678776483259438313656736572334813745748301503266300681918322458485231222502492159897624416558312389564843845614287315896631296, Xs=D(σ=0.82), Xe=D(σ=3.20), m=4096, tag=None) failed with cannot convert float infinity to integer
+usvp                 :: rop: ≈2^43.1, red: ≈2^43.1, δ: 1.012950, β: 40, d: 1078, tag: usvp
+bdd                  :: rop: ≈2^43.1, red: ≈2^43.1, svp: ≈2^21.4, β: 40, η: 2, d: 1080, tag: bdd
+bdd_mitm_hybrid      :: rop: ≈2^45.3, red: ≈2^45.3, svp: ≈2^34.8, β: 40, η: 2, ζ: 13, |S|: ≈2^20.6, d: 4840, prob: 0.995, ↻: 1, tag: hybrid
+dual                 :: rop: ≈2^45.3, mem: 41, m: ≈2^11.9, β: 40, d: 4871, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^45.1, red: ≈2^45.1, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 72, N: 1834.443, m: 1024
+SIGN_LWE rotk      h=1024 logq=432 m=4096 min_bits=43.1 best_attack=usvp all={'arora-gb': inf, 'usvp': 43.1, 'bdd': 43.1, 'bdd_hybrid': 45.3, 'bdd_mitm_hybrid': 45.3, 'dual': 45.3, 'dual_hybrid': 45.1} (20s)
+sign-LWE hardness: literature bootstrapping parameters (h, log q, m)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=192, q=2468159925167137370706039404572993651621983485896385486192307240002823568990006477485143064685922354855371536671629316902771114986286037324768883699600153243090138459526784230165280847787705855669089836172685127738979682158494309488088460413029896156157763216734515893892580715808376246693677223903012731259257824367842910149687533579840264652882513497959322617564049698280086150329871425336190336186634758396920666008274914316826463564186862578541572874587460337664, Xs=D(σ=0.82), Xe=D(σ=3.20), m=65536, tag=None) failed with int too large to convert to float
+usvp                 :: rop: ≈2^40.4, red: ≈2^40.4, δ: 1.012950, β: 40, d: 194, tag: usvp
+bdd                  :: rop: ≈2^40.3, red: ≈2^40.3, svp: ≈2^21.1, β: 40, η: 1, d: 193, tag: bdd
+dual                 :: rop: ≈2^45.0, mem: 41, m: ≈2^11.9, β: 40, d: 3997, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^42.5, red: ≈2^42.5, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 63, N: 1834.443, m: 192
+SIGN_LWE boot      h=192 logq=1546 m=65536 min_bits=40.3 best_attack=bdd all={'arora-gb': inf, 'usvp': 40.4, 'bdd': 40.3, 'bdd_hybrid': 45.0, 'bdd_mitm_hybrid': 45.0, 'dual': 45.0, 'dual_hybrid': 42.5} (12s)
+Algorithm <estimator.lwe_bkw.CodedBKW object at 0x13b2daf90> on LWEParameters(n=192, q=1552518092300708935148979488462502555256886017116696611139052038026050952686376886330878408828646477950487730697131073206171580044114814391444287275041181139204454976020849905550265285631598444825262999193716468750892846853816057856, Xs=D(σ=0.82), Xe=D(σ=3.20), m=32768, tag=None) failed with Calling ceil() on infinity or NaN
+usvp                 :: rop: ≈2^40.4, red: ≈2^40.4, δ: 1.012950, β: 40, d: 195, tag: usvp
+bdd                  :: rop: ≈2^40.4, red: ≈2^40.4, svp: ≈2^21.1, β: 40, η: 1, d: 194, tag: bdd
+dual                 :: rop: ≈2^44.5, mem: 41, m: ≈2^11.4, β: 40, d: 2815, ↻: 1, tag: dual
+dual_hybrid          :: rop: ≈2^42.5, red: ≈2^42.5, guess: ≈2^25.3, β: 40, p: 2, ζ: 0, t: 10, β': 63, N: 1834.443, m: 192
+SIGN_LWE boot      h=192 logq=768 m=32768 min_bits=40.4 best_attack=bdd all={'arora-gb': inf, 'usvp': 40.4, 'bdd': 40.4, 'bdd_hybrid': 44.5, 'bdd_mitm_hybrid': 44.5, 'dual': 44.5, 'dual_hybrid': 42.5} (7s)
