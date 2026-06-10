@@ -26,9 +26,8 @@ def run(label, h, logq, m):
 # The residual sign-LWE modulus q depends on which CKKS key the reaction attack
 # targets. With the parameters we used in our experiments:
 #   - q0   (simple bottom-modulus-based check): log q =  35  (single level-0 prime q0)
-#   - pk   (public encryption key):             log q = 310  (full ciphertext modulus Q)
-#   - rotk (rotation keys):                     log q = 432  (extended modulus Q*P,
-#                                                                with the special primes P, log P = 122)
+#   - pk   (public encryption key):             log q = 285  (minimum, full ciphertext modulus Q: 35+50x5)
+#   - rotk (rotation keys):                     log q = 407  (minimum, extended modulus Q*P: 35+50x5+61x2)
 # For each target we plug in the *smallest* modulus available for that key and
 # the *smallest* sample count m = 4096 (ring dimension N = 2^12). That is the
 # configuration most favorable to the defender (smaller q and smaller m both
@@ -36,10 +35,10 @@ def run(label, h, logq, m):
 # security -- equivalently a lower bound on how feasible the sign recovery is;
 # larger q (pk -> rotk) or larger m only make the attack easier.
 print('sign-LWE hardness: n=h, Xs=Uniform(-1,1) ternary, Xe=DG(3.2); '
-      'key-target moduli log q in {35 (q0), 310 (pk), 432 (rotk)}, m=4096 (conservative: '
+      'key-target moduli log q in {35 (q0), 285 (pk), 407 (rotk)}, m=4096 (conservative: '
       'smallest q and smallest m -> security upper bound)', flush=True)
 # TARGETS = [('q0', 35)]
-TARGETS = [('pk', 310), ('rotk', 432)]
+TARGETS = [('pk', 285), ('rotk', 407)]
 for label, logq in TARGETS:
     for h in [32, 64, 128, 192, 256, 512, 768, 1024]:
         run(label, h, logq, 4096)
