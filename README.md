@@ -83,30 +83,38 @@ bisection, $S=6\sigma$). The complete per-trial log set is shipped in
 `full_logs.zip`; a representative sample is kept uncompressed under
 `results/main/logs/` and `results/robustness/logs/`.
 
+## CKKS Parameters
+
+The experiments include the following CKKS parameters, givne in the tuples of $(\log N, \log q_0, \log \Delta; \log Q, \log PQ)$, where $\log P = 61+61$ is fixed: 
+- $(12, 35, 30; 285=35+50\times5, 407=285+122)$
+- $(12, 37, 32; 287=37+50\times5, 409=287+122)$
+- $(14, 45, 40; 295=45+50\times5, 417=295+122)$
+- $(16, 55, 50; 305=55+50\times5, 427=305+122)$
+- $(16, 60, 58; 350=60+58\times5, 472=350+122)$
+
 ## Sparse-secret variant (`grouptest/`, `sign-lwe/`)
 
 For a sparse secret of Hamming weight $h$, the support is recovered by group
 testing in $O(h\log(N/h))$ reaction queries, after which the signs follow from
 a support-restricted $h$-dimensional LWE with **no further oracle queries**.
 
-- `grouptest/grouptest.go` — subset-mask group testing; recovers the exact
+- `grouptest/grouptest.go` - subset-mask group testing; recovers the exact
   support (no false +/-) and exports the support-restricted instance.
   `grouptest/results_grouptest/` holds the query counts (`gt_*.log`) and the
   exported instances (`lwe_N*_h*.txt`).
-- `grouptest/solve_lwe.py` — recovers the signs by LLL (primal embedding,
+- `grouptest/solve_lwe.py` - recovers the signs by LLL (primal embedding,
   $m=h$ samples, dimension $2h+1$). On the exported instances it recovers all
   signs in 0.4 s ($h=32$), 3.3 s ($h=64$), 25 min ($h=128$), single core.
 - `sign-lwe/estimate_sign_lwe.py` + `results_sign_lwe.log` /
-  `results_sign_lwe_pk_rotk.log` — concrete hardness of the sign-LWE via the
-  lattice-estimator (default model). At the level-0 residual modulus
-  ($\log q_0=35$): ~40 bits at $h=128$, 51 at $h=512$, 97 at $h=1024$, reaching the
+  `results_sign_lwe_pk_rotk.log` - concrete hardness of the sign-LWE via the
+  lattice-estimator (default model). Lines 40--41 may need to be adjusted to match the follwong:
+  - At the level-0 residual modulus
+  ($\log q_0=35$): 40 bits at $h=128$, 51 at $h=512$, 97 at $h=1024$, reaching the
   128-bit target only for near-dense secrets. 
-  At the public-/rotation-key moduli $Q$/$PQ$ ($\log q=310$, $432$, or even larger, but with $m=4096$ fixed): the cost stays near 40 bits (39.6 at
-  $h=128$, 43.2 at $h=1024$); larger $q$ further weakens the instance. 
-  Note, the cost is already an upper bound, as lattice estimator only allow to use $\beta \ge 40$ and all the estimations are using this lower bound; the real cost may significantly lower. 
-  Run from a lattice-estimator checkout:
-  `sage -python estimate_sign_lwe.py`. 
-  Lines 40--41 may need to be adjusted.
+  - At the public-/rotation-key moduli $Q$ / $PQ$ ($\log q=285$, and $407$, or even larger, but with $m=4096$ fixed): 
+  the cost stays near 40 bits (39.6 at $h=128$, 43.2 at $h=1024$); larger $q$ further weakens the instance. 
+  Note, the cost is already an upper bound, as lattice estimator only allow to use $\beta \ge 40$ and most of the estimations are already using this $\beta=40$; the real cost may significantly lower. 
+  - Run from a lattice-estimator checkout: `sage -python estimate_sign_lwe.py`. 
 
 ## Determinism
 
