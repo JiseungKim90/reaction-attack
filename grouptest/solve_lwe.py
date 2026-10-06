@@ -22,15 +22,15 @@ q0, n, h = d['q0'], d['n'], d['h']
 S, a, b, s_true = d['support'], d['a'], d['b'], d['s']
 assert len(S) == h, (len(S), h)
 
-m = min(n, h)  # h samples determine the h-dim secret; embedding dim = 2h+1
+m = min(n, h)  # h samples suffice
 
-# negacyclic Rot(a) column for coefficient index j, rows 0..m-1: A[k][j]
+# Negacyclic column j.
 def rot(k, j):
     if j <= k:
         return a[k - j] % q0
     return (q0 - a[n + k - j]) % q0
 
-# primal embedding lattice, dim = m + h + 1
+# Primal embedding, dimension m+h+1.
 dim = m + h + 1
 B = IntegerMatrix(dim, dim)
 for i in range(m):
@@ -48,7 +48,7 @@ _t0 = time.time()
 LLL.reduction(B)
 t_lll = time.time() - _t0
 
-# the short vector is (e, s, +/-1); find a row with |homog|=1 giving a +/-1 secret
+# Find a short (e,s,+/-1) vector with binary s.
 best = None
 for r in range(dim):
     hgt = B[r, m + h]
@@ -56,7 +56,7 @@ for r in range(dim):
         continue
     cand = [B[r, m + jj] * hgt for jj in range(h)]
     if all(v in (-1, 1) for v in cand):
-        # verify A_S * cand + b ~ small (mod q0)
+        # Verify the residual.
         ok = True
         maxe = 0
         for k in range(m):

