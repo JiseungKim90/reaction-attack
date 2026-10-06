@@ -28,6 +28,10 @@ def entropy_ternary(p: float, n: int) -> float:
     return n * (p * math.log2(2.0 / p) + (1.0 - p) * math.log2(1.0 / (1.0 - p)))
 
 
+def entropy_fixed_weight(n: int, h: int) -> float:
+    return math.log2(math.comb(n, h)) + h
+
+
 def read_tagged(path: pathlib.Path) -> list[tuple[str, dict[str, str]]]:
     rows = []
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -106,18 +110,18 @@ def audit_robustness() -> None:
     require({key: len(value) for key, value in grouped.items()} == expected_counts, "robustness group counts differ from the paper")
 
     expected_ratios = {
-        (12, "gaussian-s3.2"): 1.019,
-        (12, "ternary-h128"): 4.447,
-        (12, "ternary-h192"): 3.273,
-        (12, "ternary-h256"): 2.658,
+        (12, "gaussian-s3.2"): 1.008,
+        (12, "ternary-h128"): 4.470,
+        (12, "ternary-h192"): 3.286,
+        (12, "ternary-h256"): 2.666,
         (12, "ternary-p0.333333"): 1.064,
         (12, "ternary-p0.5"): 1.000,
         (12, "ternary-p0.666667"): 1.051,
         (12, "ternary-p0.9"): 1.388,
-        (14, "gaussian-s3.2"): 1.020,
-        (14, "ternary-h128"): 13.670,
-        (14, "ternary-h192"): 9.756,
-        (14, "ternary-h256"): 7.709,
+        (14, "gaussian-s3.2"): 1.009,
+        (14, "ternary-h128"): 13.724,
+        (14, "ternary-h192"): 9.785,
+        (14, "ternary-h256"): 7.728,
         (14, "ternary-p0.333333"): 1.065,
         (14, "ternary-p0.5"): 0.999,
         (14, "ternary-p0.666667"): 1.051,
@@ -128,13 +132,14 @@ def audit_robustness() -> None:
         n = 1 << logn
         mean_q = statistics.mean(int(row["queries"]) for row in group)
         if secret.startswith("ternary-h"):
-            p = int(secret[len("ternary-h"):]) / n
-            denominator = entropy_ternary(p, n)
+            h = int(secret[len("ternary-h"):])
+            denominator = entropy_fixed_weight(n, h)
         elif secret.startswith("ternary-p"):
             p = float(secret[len("ternary-p"):])
             denominator = entropy_ternary(p, n)
         else:
-            denominator = n * math.log2(2 * 6 * 3.2 + 1)
+            bound = math.ceil(6 * 3.2)
+            denominator = n * math.log2(2 * bound + 1)
         ratio = mean_q / denominator
         require(round(ratio, 3) == expected_ratios[(logn, secret)], f"paper ratio differs for {(logn, secret)}")
         print(f"robustness logn={logn} secret={secret}: trials={len(group)} q_over_H={ratio:.3f}")
@@ -142,12 +147,15 @@ def audit_robustness() -> None:
 
 def audit_sparse() -> None:
     expected = {(4096, 32): 338, (4096, 64): 598, (4096, 128): 1079, (16384, 128): 1469, (65536, 128): 1801}
+    expected_ratios = {(4096, 32): 1.134, (4096, 64): 1.117, (4096, 128): 1.142, (16384, 128): 1.221, (65536, 128): 1.234}
     found = {}
     for line in (ROOT / "grouptest/results_grouptest/summary.txt").read_text(encoding="utf-8").splitlines():
         row = kv(line)
         key = (int(row["N"]), int(row["h"]))
         found[key] = int(row["queries"])
         require("exact_support=true" in line and "fp=0" in line and "fn=0" in line, f"sparse support failure: {key}")
+        ratio = int(row["queries"]) / entropy_fixed_weight(*key)
+        require(round(ratio, 3) == expected_ratios[key], f"sparse ratio differs for {key}: {ratio:.3f}")
     require(found == expected, f"sparse table differs: {found}")
     print("sparse support table: exact match")
 

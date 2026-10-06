@@ -30,6 +30,11 @@ report `exact_support=true`, `fp=0`, and `fn=0`; the three LLL runs must report
 all signs correct.  The estimator wrapper requires the pinned estimator commit
 and exactly the eight paper-target records.
 
+Ratio checks use the exact entropy `log2(binomial(N,h)) + h` for fixed-weight
+ternary secrets and `H_p` for Bernoulli-sparse secrets.  The Gaussian rows use
+the explicitly labeled support-size benchmark `N log2(2S+1)` with
+`S=ceil(6 sigma)=20`; it is not presented as the Gaussian Shannon entropy.
+
 Wall-clock time is recorded for context but is not an acceptance criterion.
 The times printed in the paper remain the historical measurements from the
 original host and load conditions.
