@@ -1,9 +1,7 @@
-# Reproducibility status
+# Reproducibility
 
-This artifact is scoped to the experiments reported in *Reaction Attack on
-CKKS Deployments with Asymptotically Optimal Query Complexity*.  Generated raw
-logs are kept under an ignored `runs/` directory on the experiment host; Git
-contains only code, manifests, and compact paper-facing summaries.
+This artifact covers the paper's experiments. Raw logs stay in ignored `runs/`
+directories; Git contains code, manifests, and compact summaries.
 
 ## Paper-to-command map
 
@@ -16,74 +14,49 @@ contains only code, manifests, and compact paper-facing summaries.
 | Public-key sign-LWE estimates | `./run_sign_lwe.sh` | 8 |
 | Empirical C2S bounds over the main-table trials | `./run_noise_sweep.sh` | 160 |
 
-The main-table total is therefore exactly 160 trials.  The robustness total is
-exactly 515 trials.  Settings not present in the paper are not part of the
-canonical reproduction.
+Totals: 160 main trials and 515 robustness trials.
 
 ## Acceptance criteria
 
-For every coordinate attack, the validator requires exactly one summary,
-`correct=N`, `alpha=4`, `no_rlk=true`, the exact paper parameter tuple, and an
-empirical C2S slot-residual record.  Query counts are checked from the emitted
-records; for ternary secrets they must follow `N + h`.  Sparse support runs must
-report `exact_support=true`, `fp=0`, and `fn=0`; the three LLL runs must report
-all signs correct.  The estimator wrapper requires the pinned estimator commit
-and exactly the eight paper-target records.
-
-Ratio checks use the exact entropy `log2(binomial(N,h)) + h` for fixed-weight
-ternary secrets and `H_p` for Bernoulli-sparse secrets.  The Gaussian rows use
-the explicitly labeled support-size benchmark `N log2(2S+1)` with
-`S=ceil(6 sigma)=20`; it is not presented as the Gaussian Shannon entropy.
-
-Wall-clock time is recorded for context but is not an acceptance criterion.
-The times printed in the paper remain the historical measurements from the
-original host and load conditions.
+- Coordinate attacks: one summary, exact parameters, `correct=N`, `alpha=4`,
+  `no_rlk=true`, a C2S residual, and `queries=N+h` for ternary secrets.
+- Sparse runs: `exact_support=true`, `fp=fn=0`, and all LLL signs correct.
+- Sign-LWE: pinned estimator commit and exactly eight paper records.
+- Ratios: exact fixed-weight entropy, `H_p` for Bernoulli secrets, and the
+  labeled Gaussian support benchmark `N log2(2S+1)` with `S=20`.
+- Wall time is recorded but not validated; the paper reports historical times.
 
 ## Evidence audit (2026-10-06)
 
-The original paper summaries were produced by source commit
-`92b145b7c03d6751dd0bb72f6f9486f54c55f973`.  The same `attack.go`, `go.mod`,
-and `go.sum` hashes were found in the GitHub repository and in the historical
-`ubuntu02` experiment directory.
+Paper summaries use source commit
+`92b145b7c03d6751dd0bb72f6f9486f54c55f973`; its `attack.go`, `go.mod`, and
+`go.sum` hashes match GitHub and the historical `ubuntu02` source.
 
-- All 155 first-four-row summaries and all 5 high-precision summaries report
-  full recovery.
-- The cleaned robustness summary contains the paper's 515 runs, all with full
-  recovery.  Ninety-three unrelated or duplicate historical rows were removed
-  from the paper-facing summary.
-- A clean `ubuntu02` build of the baseline commit recovered 4096/4096
-  coefficients at `(12,35,30)` without an rlk.
-- Clean sparse runs recovered exact support and every sign at `h=32`, `h=64`,
-  and `h=128`.
-- The eight `log q=285` estimator values were rerun at estimator commit
-  `6019056011d10d7e9c30a0d5da2d2f729fbc2eec` and match the paper endpoints
-  (33.1 bits at `h=32`, 43.2 bits at `h=1024`).
-- A fresh 160-trial C2S-only sweep measured a maximum coefficient residual of
-  `2^9.098`, a maximum `(12,35,30)` slot residual of `2^-16.347`, and a maximum
-  `(16,55,50)` slot residual of `2^-32.025`.  The first two paper bounds hold;
-  the last paper bound was corrected from `2^-32.7` to the reproducible
-  conservative statement `2^-32.0`.
+- All 160 main and 515 selected robustness logs report full recovery; 93
+  duplicate or out-of-scope robustness logs were excluded.
+- A clean baseline run recovered 4096/4096 coefficients at `(12,35,30)` without
+  an rlk.
+- Clean `h=32,64,128` runs recovered exact support and every sign.
+- Eight `log q=285` estimates at commit
+  `6019056011d10d7e9c30a0d5da2d2f729fbc2eec` match 33.1 bits (`h=32`) and
+  43.2 bits (`h=1024`).
+- The 160-run C2S sweep found maxima `2^9.098` (coefficient), `2^-16.347`
+  (`12,35,30` slot), and `2^-32.025` (`16,55,50` slot). The paper bound was
+  corrected from `2^-32.7` to `2^-32.0`.
 
 ## Remaining gaps
 
-1. The complete 160+515 suite has historical same-source evidence but has not
-   yet been rerun end-to-end from a clean checkout during this audit.  The two
-   `logN=16` regimes make that a multi-day computation.
-2. Cryptographic randomness is not seeded by this implementation.  Full
-   recovery and query identities are reproducible; sampled Hamming weights and
-   aggregate means are not byte-identical between runs.
-3. The historical high-precision run contains one interrupted raw log that did
-   not produce a summary.  It is excluded from the five successful paper
-   trials and from the repository.
+1. The historical same-source 160+515 logs exist, but the full suite was not
+   rerun from a clean checkout; the `logN=16` rows require multiple days.
+2. Randomness is unseeded. Recovery and query identities reproduce, but sampled
+   weights and aggregate means are not byte-identical.
+3. One interrupted high-precision log produced no summary. It remains in the
+   audit archive and is excluded from the five successful paper records.
 
 ## Experiment host
 
-The 2026-10-06 clean audit was run under:
+Audit date: 2026-10-06. Host: `ubuntu02` (Ubuntu 20.04, x86-64), Go 1.24.0,
+Python 3.8.10, fpylll 0.5.1dev, and SageMath 9.0.
 
-- host: `ubuntu02`, Ubuntu 20.04, x86-64;
-- Go toolchain selected by `GOTOOLCHAIN=auto`: Go 1.24.0;
-- Python 3.8.10 and fpylll 0.5.1dev for the sparse LLL check;
-- SageMath 9.0 and the pinned estimator commit above for sign-LWE.
-
-The audit directory is
-`/home/ubuntu/research-vault/projects/04-lattice/cryptanalysis/reaction-attack-ckks-O-N-lattigo/reproductions/20261006-baseline-92b145b`.
+Audit directory:
+`/home/ubuntu/research-vault/projects/04-lattice/cryptanalysis/reaction-attack-ckks-O-N-lattigo/reproductions/20261006-baseline-92b145b`
