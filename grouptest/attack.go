@@ -17,7 +17,7 @@ import (
 )
 
 // parseSecret maps a -secret spec to a Lattigo distribution.
-//   p:<float>  Bernoulli ternary, Pr[s_i != 0] = float           (Lattigo default is p:0.333333)
+//   p:<float>  Bernoulli ternary, Pr[s_i != 0] = float           (Lattigo default is p:0.666667)
 //   h:<int>    fixed-Hamming-weight ternary, exactly <int> nonzero coefficients
 //   g[:<sigma>] discrete Gaussian secret (default sigma=3.2), bound 6*sigma
 // Returns the distribution, a self-describing label, whether to use the
@@ -57,10 +57,14 @@ func main() {
 	logD := flag.Int("logd", 30, "log2 of CKKS scale Delta")
 	logQ0 := flag.Int("logq0", 35, "log2 of the level-0 ciphertext modulus q_0 (matches paper Table 1 'log q')")
 	measureC2S := flag.Bool("c2s-noise", false, "additionally measure the empirical B_C2S noise after CoeffsToSlots")
-	secretSpec := flag.String("secret", "p:0.333333", "secret distribution: p:<float> Bernoulli ternary, h:<int> fixed Hamming weight, g[:<sigma>] discrete Gaussian")
+	c2sOnly := flag.Bool("c2s-only", false, "stop after the C2S measurement (requires -c2s-noise)")
+	secretSpec := flag.String("secret", "p:0.666667", "secret distribution: p:<float> Bernoulli ternary, h:<int> fixed Hamming weight, g[:<sigma>] discrete Gaussian")
 	noRlk := flag.Bool("no-rlk", false, "omit the relinearization key from the evaluator (validates the no-rlk claim: plaintext-ciphertext multiply must not need it)")
 	groupTest := flag.Bool("group-test", false, "group-testing support recovery; report query count vs h*log2(N/h)")
 	flag.Parse()
+	if *c2sOnly && !*measureC2S {
+		panic("-c2s-only requires -c2s-noise")
+	}
 
 	xs, secretLabel, boundedSearch, secretBound := parseSecret(*secretSpec)
 
@@ -165,6 +169,9 @@ func main() {
 	if *measureC2S {
 		measureC2SNoise(params, encoder, dec, ct2Real, ct2Imag, secret)
 	}
+	if *c2sOnly {
+		return
+	}
 
 	if *groupTest {
 		runGroupTest(params, pk, encryptor, eval, dec, ct2Real, ct2Imag, secret, chooseAlpha(N))
@@ -257,12 +264,13 @@ func main() {
 		slotCorrect, N, 100.0*float64(slotCorrect)/float64(N),
 		queries, float64(queries)/float64(N), wall)
 	// Compact one-line summary for log scraping.
-	fmt.Printf("SUMMARY secret=%s logn=%d logd=%d N=%d hw=%d correct=%d queries=%d ratio=%.4f wall_seconds=%.4f\n",
-		secretLabel, *logN, *logD, N, hw, correct, queries, float64(queries)/float64(N), wall.Seconds())
+	fmt.Printf("SUMMARY secret=%s logn=%d logq0=%d logd=%d N=%d hw=%d correct=%d queries=%d ratio=%.4f alpha=%d no_rlk=%t wall_seconds=%.4f\n",
+		secretLabel, *logN, *logQ0, *logD, N, hw, correct, queries, float64(queries)/float64(N), chooseAlpha(N), *noRlk, wall.Seconds())
 }
 
-// measureC2SNoise estimates B_C2S from (decoded slot - true secret) after
-// rescaling by the post-C2S ciphertext scale.
+// measureC2SNoise measures decoded slot residuals after CoeffsToSlots.  The
+// scaled values are diagnostics only: multiplying a slot residual by the CKKS
+// scale is not a coefficient-domain decryption-error measurement.
 func measureC2SNoise(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryptor, ctReal, ctImag *rlwe.Ciphertext, secret []int) {
 	N := params.N()
 	slots := params.MaxSlots()
@@ -273,11 +281,14 @@ func measureC2SNoise(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryp
 		_ = enc.Decode(dec.DecryptNew(ctImag), ii)
 	}
 	logS := params.LogMaxSlots()
+	expectedReal := make([]complex128, slots)
+	expectedImag := make([]complex128, slots)
 	maxResid := 0.0
 	sumSq := 0.0
 	count := 0
 	for k := 0; k < slots; k++ {
 		coeffReal := bitReverse(k, logS)
+		expectedReal[k] = complex(float64(secret[coeffReal]), 0)
 		residReal := real(rr[k]) - float64(secret[coeffReal])
 		ar := math.Abs(residReal)
 		if ar > maxResid {
@@ -287,6 +298,7 @@ func measureC2SNoise(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryp
 		count++
 		if ctImag != nil {
 			coeffImag := bitReverse(k, logS) + N/2
+			expectedImag[k] = complex(float64(secret[coeffImag]), 0)
 			residImag := real(ii[k]) - float64(secret[coeffImag])
 			ai := math.Abs(residImag)
 			if ai > maxResid {
@@ -298,8 +310,43 @@ func measureC2SNoise(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryp
 	}
 	stddev := math.Sqrt(sumSq / float64(count))
 	scale := ctReal.Scale.Float64()
-	fmt.Printf("EMPIRICAL_BC2S max_slot_residual=%.3e std_slot_residual=%.3e scale=2^%.2f  poly_max=2^%.2f  poly_std=2^%.2f  paper_bound=2^18\n",
-		maxResid, stddev, math.Log2(scale), math.Log2(maxResid*scale+1.0), math.Log2(stddev*scale+1.0))
+	maxCoeff := maxCoefficientResidual(params, enc, dec, ctReal, expectedReal)
+	if ctImag != nil {
+		if candidate := maxCoefficientResidual(params, enc, dec, ctImag, expectedImag); candidate > maxCoeff {
+			maxCoeff = candidate
+		}
+	}
+	fmt.Printf("EMPIRICAL_BC2S max_slot_residual=%.3e std_slot_residual=%.3e scale=2^%.2f max_coeff_residual=%d log2_coeff_residual=%.2f\n",
+		maxResid, stddev, math.Log2(scale), maxCoeff, math.Log2(float64(maxCoeff)))
+}
+
+func maxCoefficientResidual(params ckks.Parameters, enc *ckks.Encoder, dec *rlwe.Decryptor, ct *rlwe.Ciphertext, expectedSlots []complex128) uint64 {
+	actual := dec.DecryptNew(ct)
+	expected := ckks.NewPlaintext(params, ct.Level())
+	expected.MetaData = ct.MetaData.CopyNew()
+	if err := enc.Encode(expectedSlots, expected); err != nil {
+		panic(fmt.Errorf("encode expected C2S plaintext: %w", err))
+	}
+	ringQ := params.RingQ().AtLevel(ct.Level())
+	diff := ringQ.NewPoly()
+	ringQ.Sub(actual.Value, expected.Value, diff)
+	if actual.IsNTT {
+		ringQ.INTT(diff, diff)
+	}
+	if actual.IsMontgomery {
+		ringQ.IMForm(diff, diff)
+	}
+	q0 := ringQ.SubRings[0].Modulus
+	var max uint64
+	for _, coefficient := range diff.Coeffs[0] {
+		if coefficient > q0/2 {
+			coefficient = q0 - coefficient
+		}
+		if coefficient > max {
+			max = coefficient
+		}
+	}
+	return max
 }
 
 func bitReverse(x, bits int) int {

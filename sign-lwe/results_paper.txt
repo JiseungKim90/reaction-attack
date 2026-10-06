@@ -1,0 +1,14 @@
+# Paper-target estimator results
+# Reproduced 2026-10-06 on ubuntu02 with malb/lattice-estimator
+# commit 6019056011d10d7e9c30a0d5da2d2f729fbc2eec, SageMath 9.0,
+# and PYTHONNOUSERSITE=1.  Estimator runtime is intentionally omitted because
+# wall time is not a reproduction criterion.
+h logq m min_bits best_attack
+32 285 4096 33.1 usvp
+64 285 4096 37.7 bdd
+128 285 4096 39.6 usvp
+192 285 4096 40.4 usvp
+256 285 4096 40.9 usvp
+512 285 4096 42.0 usvp
+768 285 4096 42.7 usvp
+1024 285 4096 43.2 usvp

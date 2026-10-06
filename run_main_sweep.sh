@@ -1,46 +1,67 @@
-#!/bin/bash
-# Unified end-to-end sweep for the O(N) reaction attack (constant alpha*=4).
-# One CSV row per run -> results/main/summary.csv (main table) and
-# results/robustness/summary.csv (secret-distribution sweep); per-trial oracle
-# logs -> results/{main,robustness}/logs/. See README.md for the row->table map.
-set -u
-export LC_ALL=C   # force English/byte locale so date output is never localized
+#!/usr/bin/env bash
+# Reproduce the first four rows of the main table and all 515 robustness runs.
+set -euo pipefail
+export LC_ALL=C
 
-BIN=./attack
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+RUN_ID=${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}
+OUT_ROOT=${OUT_ROOT:-$ROOT/runs/$RUN_ID-main}
 PAR=${PAR:-14}
-[ -x "$BIN" ] || go build -o attack . || { echo "build failed" >&2; exit 1; }
+PYTHON=${PYTHON:-python3}
+BIN=$OUT_ROOT/bin/attack
+
+mkdir -p "$OUT_ROOT/bin" "$OUT_ROOT/main/logs" "$OUT_ROOT/robustness/logs"
+(cd "$ROOT" && go build -trimpath -o "$BIN" .)
+"$ROOT/scripts/write_provenance.sh" "$OUT_ROOT/provenance.txt" "$ROOT"
+{
+  echo "run_id=$RUN_ID"
+  echo "parallelism=$PAR"
+  echo "success=every log has exactly one SUMMARY, correct=N, alpha=4, no_rlk=true, and an EMPIRICAL_BC2S record"
+} >> "$OUT_ROOT/provenance.txt"
+
+manifest() {
+  local kind=$1
+  printf 'tag\tlogn\tlogq0\tlogd\tsecret\n'
+  case "$kind" in
+    main)
+      for t in $(seq 1 50); do printf 'ln12_q35_d30_p23_t%s\t12\t35\t30\tp:0.666667\n' "$t"; done
+      for t in $(seq 1 50); do printf 'ln12_q37_d32_p23_t%s\t12\t37\t32\tp:0.666667\n' "$t"; done
+      for t in $(seq 1 50); do printf 'ln14_q45_d40_p23_t%s\t14\t45\t40\tp:0.666667\n' "$t"; done
+      for t in $(seq 1 5);  do printf 'ln16_q55_d50_p23_t%s\t16\t55\t50\tp:0.666667\n' "$t"; done
+      ;;
+    robustness)
+      for s in h:128 h:192 h:256 p:0.333333 p:0.5 p:0.666667 p:0.9; do
+        stag=${s//[:.]/_}; for t in $(seq 1 50); do printf 'ln12_q35_d30_%s_t%s\t12\t35\t30\t%s\n' "$stag" "$t" "$s"; done
+      done
+      for t in $(seq 1 20); do printf 'ln12_q35_d30_g_3_2_t%s\t12\t35\t30\tg:3.2\n' "$t"; done
+      for s in h:128 h:192 h:256 p:0.333333 p:0.5 p:0.666667 p:0.9; do
+        stag=${s//[:.]/_}; for t in $(seq 1 20); do printf 'ln14_q45_d40_%s_t%s\t14\t45\t40\t%s\n' "$stag" "$t" "$s"; done
+      done
+      for t in $(seq 1 5); do printf 'ln14_q45_d40_g_3_2_t%s\t14\t45\t40\tg:3.2\n' "$t"; done
+      ;;
+  esac
+}
 
 runone() {
-  local logn=$1 logq0=$2 logd=$3 secret=$4 trial=$5 dest=$6
-  local stag; stag=$(echo "$secret" | tr ":." "__")
-  local log="results/${dest}/logs/ln${logn}_q${logq0}_d${logd}_${stag}_t${trial}.log"
-  mkdir -p "results/${dest}/logs"
-  "$BIN" -logn "$logn" -logq0 "$logq0" -logd "$logd" -secret "$secret" -c2s-noise > "$log" 2>&1
-  awk -v c="ln${logn}_q${logq0}_d${logd}_${stag}_t${trial}" "/^SUMMARY/{print c\" \"\$0}" "$log" >> "results/${dest}/summary.csv"
+  local kind=$1 tag=$2 logn=$3 logq0=$4 logd=$5 secret=$6
+  local log="$OUT_ROOT/$kind/logs/$tag.log"
+  "$BIN" -logn "$logn" -logq0 "$logq0" -logd "$logd" -secret "$secret" -c2s-noise -no-rlk > "$log" 2>&1
+  [[ $(grep -c '^SUMMARY ' "$log") -eq 1 ]]
+  grep -q " correct=$((1 << logn)) " "$log"
 }
 export -f runone
-export BIN
+export BIN OUT_ROOT
 
-mkdir -p results/main/logs results/robustness/logs
-: > results/main/summary.csv
-: > results/robustness/summary.csv
-
-gen() {
-  # main table (tab: experiment): default full-random ternary p=2/3, four regimes
-  for t in $(seq 1 50); do echo "12 35 30 p:0.666667 $t main"; done
-  for t in $(seq 1 50); do echo "12 37 32 p:0.666667 $t main"; done
-  for t in $(seq 1 50); do echo "14 45 40 p:0.666667 $t main"; done
-  for t in $(seq 1 5);  do echo "16 55 50 p:0.666667 $t main"; done
-  # secret-distribution robustness (tab: distsweep) at N=2^12 and N=2^14
-  for s in h:128 h:192 h:256 p:0.333333 p:0.5 p:0.666667 p:0.9; do for t in $(seq 1 50); do echo "12 35 30 $s $t robustness"; done; done
-  for t in $(seq 1 20); do echo "12 35 30 g:3.2 $t robustness"; done
-  for s in h:128 h:192 h:256 p:0.333333 p:0.5 p:0.666667 p:0.9; do for t in $(seq 1 20); do echo "14 45 40 $s $t robustness"; done; done
-  for t in $(seq 1 5);  do echo "14 45 40 g:3.2 $t robustness"; done
-  # low-precision empirical-noise stress preset
-  for t in $(seq 1 5);  do echo "15 33 25 p:0.666667 $t robustness"; done
+run_kind() {
+  local kind=$1 expected=$2
+  local spec="$OUT_ROOT/$kind/manifest.tsv"
+  manifest "$kind" > "$spec"
+  tail -n +2 "$spec" | xargs -P "$PAR" -L 1 bash -c 'runone "$@"' _ "$kind"
+  "$PYTHON" "$ROOT/scripts/validate_runs.py" \
+    --manifest "$spec" --logs "$OUT_ROOT/$kind/logs" \
+    --output "$OUT_ROOT/$kind/summary.csv" --expected-count "$expected"
 }
 
-N=$(gen | wc -l)
-echo "START $(date) total_jobs=$N par=$PAR"
-gen | xargs -P "$PAR" -L1 bash -c "runone \"\$@\"" _
-echo "DONE $(date) main_lines=$(wc -l < results/main/summary.csv) robustness_lines=$(wc -l < results/robustness/summary.csv)"
+run_kind main 155
+run_kind robustness 515
+echo "complete: $OUT_ROOT"

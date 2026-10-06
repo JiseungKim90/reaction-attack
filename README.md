@@ -1,146 +1,96 @@
 # Reaction Attack on CKKS — Artifact
 
-Reference implementation of the $O(N)$ reaction attack (Algorithm 1) from
-*Reaction Attack on CKKS and Its Variants*, validated end-to-end against
-[Lattigo](https://github.com/tuneinsight/lattigo) v6.2.0.
+This repository implements the attacks evaluated in *Reaction Attack on CKKS
+Deployments with Asymptotically Optimal Query Complexity* using Lattigo v6.2.0.
+It is organized around the paper's exact experiment sets; unrelated historical
+sweeps and raw logs are not versioned.
 
-The attack recovers the full secret key of a CKKS deployment using only the
-**public material** ($\mathsf{pk}$, Galois keys for `CoeffsToSlots`) and a
-**one-bit slot-domain reaction oracle** that reveals only whether a returned
-ciphertext's decoded slot magnitudes stay within an admissible threshold $\tau$
-(default $\tau = 1$). The underlying RLWE / IND-CPA security is untouched; the
-attack exploits an observable accept/reject reaction.
-
-> **Threat model (honest key-gen, malicious compute).** The attacker never sees
-> plaintext values and has no control over key generation. It submits adversarially
-> assembled ciphertexts and observes the client's accept/reject bit. The oracle in
-> this code decrypts with the secret key but returns **only** the 1-bit reaction;
-> the attack-construction path never reads the secret (the secret is used solely to
-> score recovery at the end).
+The implementation models a malicious evaluator with public CKKS material and
+a one-bit client reaction indicating whether decoded slot magnitudes remain at
+most the threshold `tau=1`.  The evaluator does not receive the secret key or a
+relinearization key.  The secret key is used inside the simulated client oracle
+and afterwards to score recovery.
 
 ## Requirements
 
-- **Go >= 1.24** (see `go.mod`; the module pins `go 1.24.0`).
-- Network access on first build so the Go toolchain can fetch Lattigo v6.2.0.
-- Linux or macOS, x86-64. A single core suffices; larger ring dimensions need
-  more RAM and time.
-- The sparse-secret extension additionally uses Python 3 with
-  [`fpylll`](https://github.com/fplll/fpylll) (sign recovery by LLL) and the
-  [lattice-estimator](https://github.com/malb/lattice-estimator) (concrete
-  hardness); see `grouptest/` and `sign-lwe/`.
+- Go 1.24 or newer (`go.mod` pins the language/toolchain version).
+- Linux or macOS for the shell wrappers.
+- Python 3 for result validation.
+- For the sparse LLL rows: Python with fpylll (the audited server used Python
+  3.8.10 and fpylll 0.5.1dev).
+- For the sign-LWE row: SageMath and a checkout of
+  `malb/lattice-estimator` at
+  `6019056011d10d7e9c30a0d5da2d2f729fbc2eec`.
 
-## Build
-
-```sh
-go build -o attack .
-```
-
-## Quick smoke test (~30 s)
+## Quick check
 
 ```sh
-./attack -logn 12 -secret p:0.666667
+go build -trimpath -o attack .
+./attack -logn 12 -logq0 35 -logd 30 \
+  -secret p:0.666667 -c2s-noise -no-rlk
 ```
 
-Expected tail: full key recovery (`correct == N`) with a query/$N$ ratio of
-~1.67 for the default full-random ternary secret (`Ternary{P=2/3}`, Lattigo's
-`DefaultXs`). For the sparse `p:0.333333` secret the ratio is ~1.33.
+A successful run ends with `correct=4096`, `queries=4096+hw`, `alpha=4`, and
+`no_rlk=true`.  The default secret is Lattigo's `Ternary{P: 2/3}`.
 
-## Command-line flags
+## Reproduce the paper
 
-| Flag | Default | Meaning |
-|------|---------|---------|
-| `-logn` | `12` | $\log_2$ ring dimension $N$ |
-| `-logd` | `30` | $\log_2$ CKKS scale $\Delta$ |
-| `-logq0` | `35` | $\log_2$ level-zero modulus $q_0$ (paper "$\log q$") |
-| `-secret` | `p:0.333333` | secret: `p:<float>` Bernoulli ternary ($\Pr[s_i\neq0]$; Lattigo default `p:0.666667`), `h:<int>` fixed Hamming weight, `g[:<sigma>]` discrete Gaussian (bisection) |
-| `-c2s-noise` | `false` | additionally measure the empirical slot-domain $B_{\mathsf{C2S}}$ residual |
-| `-no-rlk` | `false` | omit the relinearization key (validates that the per-query plaintext multiply does not consume `rlk`) |
+```sh
+# First four main-table rows (155 trials) and robustness table (515 trials).
+# PAR=14 matches the original process-level concurrency; each process is single-threaded.
+./run_main_sweep.sh
 
-The mask amplitude is the **constant $\alpha^\* = 4$**, with no per-parameter
-calibration (`chooseAlpha` in `attack.go`). The feasibility window
-$\tau < \alpha^\* < \tau/\nu_\alpha$ is independent of $N$ (see paper, Sec. 3.3);
-the earlier $N$-dependent sizing $\lceil 4\sqrt{N/2}\rceil$ is kept only as a
-commented-out alternative.
+# Fifth main-table row (5 concurrent, individually single-threaded trials).
+./run_16_60_58.sh
 
-## Reproducing the paper results
+# Five support-recovery rows and the h=32,64,128 LLL solves.
+./run_grouptest.sh
 
-`run_main_sweep.sh` runs every end-to-end regime in one pass (constant
-$\alpha^\*=4$, `-c2s-noise` on), writing the main table and the secret-distribution
-sweep to separate CSVs with per-trial oracle logs:
+# Eight public-key sign-LWE estimates at log q=285.
+ESTIMATOR_DIR=/path/to/lattice-estimator ./run_sign_lwe.sh
 
-| Paper element | Output |
-|---|---|
-| **Main table** (default $p=2/3$, mean+/-std over trials) | `results/main/summary.csv`: `p:0.666667` at $(\log N,\log q_0,\log\Delta)=(12,35,30),(12,37,32),(14,45,40),(16,55,50)$ |
-| **Secret-distribution robustness** | `results/robustness/summary.csv`: `h:{128,192,256}`, `p:{0.333333,0.5,0.666667,0.9}`, `g:3.2` at $N=2^{12},2^{14}$ |
-| **Low-precision noise preset** | `results/robustness/summary.csv`: `p:0.666667` at $(15,33,25)$ |
-| **High-precision regime** | `run_16_60_58.sh`: `p:0.666667` at $(16,60,58)$, 5 trials -> `results/main/summary_16_60_58.csv` |
-
-Each CSV row is `<tag> SUMMARY secret=... logn=... logd=... N=... hw=...
-correct=... queries=... ratio=... wall_seconds=...`. Every run achieves full
-key recovery (`correct == N`); the query/$N$ ratio is ~1.67 for the default
-$p=2/3$ secret and ~5.4 for the discrete-Gaussian secret ($O(N\log S)$
-bisection, $S=6\sigma$). The complete per-trial log set is shipped in
-`full_logs.zip`; a representative sample is kept uncompressed under
-`results/main/logs/` and `results/robustness/logs/`.
-
-## CKKS Parameters
-
-The experiments include the following CKKS parameters, givne in the tuples of $(\log N, \log q_0, \log \Delta; \log Q, \log PQ)$, where $\log P = 61+61$ is fixed: 
-- $(12, 35, 30; 285=35+50\times5, 407=285+122)$
-- $(12, 37, 32; 287=37+50\times5, 409=287+122)$
-- $(14, 45, 40; 295=45+50\times5, 417=295+122)$
-- $(16, 55, 50; 305=55+50\times5, 427=305+122)$
-- $(16, 60, 58; 350=60+58\times5, 472=350+122)$
-
-## Sparse-secret variant (`grouptest/`, `sign-lwe/`)
-
-For a sparse secret of Hamming weight $h$, the support is recovered by group
-testing in $O(h\log(N/h))$ reaction queries, after which the signs follow from
-a support-restricted $h$-dimensional LWE with **no further oracle queries**.
-
-- `grouptest/grouptest.go` - subset-mask group testing; recovers the exact
-  support (no false +/-) and exports the support-restricted instance.
-  `grouptest/results_grouptest/` holds the query counts (`gt_*.log`) and the
-  exported instances (`lwe_N*_h*.txt`).
-- `grouptest/solve_lwe.py` - recovers the signs by LLL (primal embedding,
-  $m=h$ samples, dimension $2h+1$). On the exported instances it recovers all
-  signs in 0.4 s ($h=32$), 3.3 s ($h=64$), 25 min ($h=128$), single core.
-- `sign-lwe/estimate_sign_lwe.py` + `results_sign_lwe.log` /
-  `results_sign_lwe_pk_rotk.log` - concrete hardness of the sign-LWE via the
-  lattice-estimator (default model). Lines 40--41 may need to be adjusted to match the follwong:
-  - At the level-0 residual modulus
-  ($\log q_0=35$): 40 bits at $h=128$, 51 at $h=512$, 97 at $h=1024$, reaching the
-  128-bit target only for near-dense secrets. 
-  - At the public-/rotation-key moduli $Q$ / $PQ$ ($\log q=285$, and $407$, or even larger, but with $m=4096$ fixed): 
-  the cost stays near 40 bits (39.6 at $h=128$, 43.2 at $h=1024$); larger $q$ further weakens the instance. 
-  Note, the cost is already an upper bound, as lattice estimator only allow to use $\beta \ge 40$ and most of the estimations are already using this $\beta=40$; the real cost may significantly lower. 
-  - Run from a lattice-estimator checkout: `sage -python estimate_sign_lwe.py`. 
-
-## Determinism
-
-Runs are **not** seeded: each invocation samples a fresh secret, public key, and
-encryption randomness. The *outcome* is deterministic (full recovery whenever
-the slot-margin and modulus conditions hold), but the Hamming weight, exact
-query count, and wall-clock time vary slightly. A rerun reproduces the claims
-(full recovery, ~1.67 $N$ queries for the default $p=2/3$), not byte-identical
-numbers.
-
-## Repository layout
-
+# The 160 paper-parameter C2S measurements, skipping only the query loop.
+./run_noise_sweep.sh
 ```
-attack.go              Algorithm 1 (Steps 1-4, oracle, recovery); constant alpha*=4
-go.mod / go.sum        Go module (Lattigo v6.2.0)
-run_main_sweep.sh      main table + robustness sweep   -> results/{main,robustness}/
-run_16_60_58.sh        high-precision (16,60,58) regime -> results/main/
-results/main/          tab: experiment (default p=2/3): summary.csv + sample logs
-results/robustness/    tab: distsweep (multi-distribution): summary.csv + sample logs
-full_logs.zip          complete per-trial oracle logs
-grouptest/             sparse-secret support recovery (group testing) + sign LLL
-sign-lwe/              sign-LWE concrete-hardness estimate (lattice-estimator)
-```
+
+Each wrapper creates a unique ignored `runs/<UTC-id>-.../` directory containing
+the command manifest, environment and source provenance, raw logs, and a compact
+validated summary.  The wrappers fail if a required run exits early, lacks a
+summary, uses the wrong paper parameters, receives an rlk, or fails recovery.
+
+Wall time is not a pass/fail condition.  The paper's wall times are historical
+measurements and naturally vary with the host and concurrent load.
+
+## Versioned evidence
+
+- `results/main/summary.csv`: 155 original runs for the first four rows.
+- `results/main/summary_16_60_58.csv`: 5 original high-precision runs.
+- `results/robustness/summary.csv`: exactly the 515 runs in the robustness table.
+- `grouptest/results_grouptest/summary.txt`: the five support-recovery rows.
+- `sign-lwe/results_paper.txt`: the eight pinned `log q=285` estimates.
+- `results/noise/summary.csv`: 160 direct coefficient- and slot-domain C2S
+  residual measurements at the five main-table parameter tuples.
+
+Per-trial logs, generated LWE instances, binaries, and archives are deliberately
+excluded.  They are regenerable and previously included duplicates, stale
+settings, and one interrupted run.  See `REPRODUCIBILITY.md` for the audit,
+acceptance criteria, exact server environment, and unresolved evidence gaps.
+
+## Parameters and outputs
+
+The main table uses `(logN, logq0, logDelta)` equal to `(12,35,30)`,
+`(12,37,32)`, `(14,45,40)`, `(16,55,50)`, and `(16,60,58)`.  The first four
+modulus chains use five 50-bit upper primes; the high-precision chain uses five
+58-bit upper primes.  All use two 61-bit special primes.
+
+`SUMMARY` records include the secret distribution, all three paper parameters,
+dimension, Hamming weight, recovered-coordinate count, query count, query
+ratio, mask amplitude, rlk status, and wall time.  `EMPIRICAL_BC2S` reports
+decoded slot residuals.  Its scaled-slot fields are diagnostics and are not
+coefficient-domain error measurements.
 
 ## Scope
 
-This artifact validates the attack for **plain CKKS in Lattigo** only. The
-conditional applicability to bootstrappable / rescaling-free / integer-message
-CKKS variants is analyzed in the paper but not implemented here.
+The executable validates plain CKKS in Lattigo.  Applicability to
+bootstrappable, rescaling-free, and integer-message variants is analyzed in the
+paper but is not implemented by this artifact.

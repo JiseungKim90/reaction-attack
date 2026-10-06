@@ -1,23 +1,26 @@
-# compiled attack binary (rebuild with `go build -o attack .`)
+# Rebuildable binaries.
 /attack
 *.exe
+attack_a4*
+attack_gt
+reaction-attack-ckks-on-lattigo
+/grouptest/attack_gt
 
-# pre-edit backups / local archive (not part of the artifact)
+# Raw runs stay on the experiment host.  Only compact validated summaries are
+# versioned in results/.
+/runs/
+*.log
+*.out
+*.zip
+*.tar
+*.tar.gz
+/results/*/logs/
+/grouptest/results_grouptest/lwe_*.txt
+__pycache__/
+*.pyc
+
+# Local backups and editor/OS files.
 *.bak
 _archive/
-
-# OS / editor cruft
 .DS_Store
 Thumbs.db
-
-# compiled experiment binaries (rebuild with `go build`)
-attack_a4*
-attack_gt
-reaction-attack-ckks-on-lattigo
-/grouptest/attack_gt
-
-# compiled experiment binaries (rebuild with go build)
-attack_a4*
-attack_gt
-reaction-attack-ckks-on-lattigo
-/grouptest/attack_gt

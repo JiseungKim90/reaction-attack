@@ -1,0 +1,18 @@
+captured_utc=2026-10-06T01:52:17Z
+host=ubuntu02
+Linux ubuntu02 5.15.0-139-generic #149~20.04.1-Ubuntu SMP Wed Apr 16 08:29:56 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+git_commit=unavailable
+git_dirty=unavailable
+go version go1.24.0 linux/amd64
+auto
+linux
+amd64
+/home/ubuntu/go
+/home/ubuntu/go/pkg/mod
+4df386528b131f22fccf0407e4def937ed0221df11403c6a567a134c3d732f09  /home/ubuntu/research-vault/projects/04-lattice/cryptanalysis/reaction-attack-ckks-O-N-lattigo/reproductions/20261006-coeff-measurement/src/attack.go
+5ff6f63a17b5d2bf2d6ce4f768a3b43b35a9879e8bdcb8f955eafed63e8a7fea  /home/ubuntu/research-vault/projects/04-lattice/cryptanalysis/reaction-attack-ckks-O-N-lattigo/reproductions/20261006-coeff-measurement/src/go.mod
+ba0b56d4f4d13fd01648402ad271b0c27a6722830ca2f652fcd94e4cfdcb508d  /home/ubuntu/research-vault/projects/04-lattice/cryptanalysis/reaction-attack-ckks-O-N-lattigo/reproductions/20261006-coeff-measurement/src/go.sum
+run_id=20261006-paper-noise-160
+parallelism=14
+mode=c2s-only; identical key generation and C2S path, query loop skipped
+success=160 records; coefficient bound and the two paper slot bounds hold

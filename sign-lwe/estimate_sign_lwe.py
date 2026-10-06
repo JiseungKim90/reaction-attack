@@ -2,8 +2,10 @@ from estimator import *
 from sage.all import log
 import time
 
-# Concrete hardness of the support-restricted sign-LWE residual (n = h, secret in
-# {-1,+1} on the recovered support, Xe = DG(3.2)). All logs are base 2.
+# Paper-reported conservative proxy for the support-restricted sign-LWE
+# residual.  The actual sign vector is in {-1,+1}^h; as stated in the paper,
+# the reported upper-bound estimates instead use the estimator's default
+# ternary model Uniform(-1,1).  Xe = DG(3.2), and all logs are base 2.
 Xe = ND.DiscreteGaussian(3.2)
 
 
@@ -22,34 +24,11 @@ def run(label, h, logq, m):
               % (label, h, logq, m, str(e)[:90]), flush=True)
 
 
-# --- Key-target sweep: same h grid, three moduli ---------------------------
-# The residual sign-LWE modulus q depends on which CKKS key the reaction attack
-# targets. With the parameters we used in our experiments:
-#   - q0   (simple bottom-modulus-based check): log q =  35  (single level-0 prime q0)
-#   - pk   (public encryption key):             log q = 285  (minimum, full ciphertext modulus Q: 35+50x5)
-#   - rotk (rotation keys):                     log q = 407  (minimum, extended modulus Q*P: 35+50x5+61x2)
-# For each target we plug in the *smallest* modulus available for that key and
-# the *smallest* sample count m = 4096 (ring dimension N = 2^12). That is the
-# configuration most favorable to the defender (smaller q and smaller m both
-# raise security), so the reported bit-counts are an UPPER BOUND on the residual's
-# security -- equivalently a lower bound on how feasible the sign recovery is;
-# larger q (pk -> rotk) or larger m only make the attack easier.
-print('sign-LWE hardness: n=h, Xs=Uniform(-1,1) ternary, Xe=DG(3.2); '
-      'key-target moduli log q in {35 (q0), 285 (pk), 407 (rotk)}, m=4096 (conservative: '
-      'smallest q and smallest m -> security upper bound)', flush=True)
-# TARGETS = [('q0', 35)]
-TARGETS = [('pk', 285), ('rotk', 407)]
+# --- Paper sweep: public-key modulus ---------------------------------------
+# The paper reports the minimum public-key modulus, log q=285, with m=4096.
+print('sign-LWE hardness proxy: n=h, Xs=Uniform(-1,1) ternary, Xe=DG(3.2); '
+      'public-key modulus log q=285, m=4096 (paper configuration)', flush=True)
+TARGETS = [('pk', 285)]
 for label, logq in TARGETS:
     for h in [32, 64, 128, 192, 256, 512, 768, 1024]:
         run(label, h, logq, 4096)
-
-# --- Representative bootstrapping parameters from the literature ------------
-# Other works deploy sparse ternary secrets at concrete bootstrapping-grade
-# (h, log q, m). Included so the estimate also covers those instances directly.
-print('sign-LWE hardness: literature bootstrapping parameters (h, log q, m)', flush=True)
-BOOT = [
-    (192, 1546, 2 ** 16),
-    (192, 768, 2 ** 15),
-]
-for h, logq, m in BOOT:
-    run('boot', h, logq, m)
